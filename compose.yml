@@ -1,0 +1,16 @@
+services:
+  dify-creator:
+    build:
+      context: .
+    image: dify-creator:local
+    working_dir: /app
+    env_file:
+      # Default: load non-secret template so `--help` works even before creating .env
+      # Use your own secrets file by setting `DIFY_ENV_FILE=.env`
+      - ${DIFY_ENV_FILE:-env.example}
+    volumes:
+      - ./:/app
+    # default; override via `docker compose run ... <subcommand>`
+    command: ["--help"]
+
+

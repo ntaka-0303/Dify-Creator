@@ -1,0 +1,12 @@
+.env
+.env.*
+env.local
+
+.venv/
+__pycache__/
+*.pyc
+
+artifacts/
+.pytest_cache/
+
+
