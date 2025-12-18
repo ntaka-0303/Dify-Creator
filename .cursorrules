@@ -1,0 +1,7 @@
+# Cursor Rules for Dify-Creator Project
+
+## プロジェクト構造
+- プロジェクトルート: `/home/ntaka/dev/Dify-Creator`
+- Pythonプロジェクト（dify_creatorパッケージ）
+- Docker対応プロジェクト
+
