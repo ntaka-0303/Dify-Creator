@@ -1,12 +1,25 @@
+# 環境変数・秘密情報
 .env
 .env.*
 env.local
 
+# Python
 .venv/
 __pycache__/
 *.pyc
-
-artifacts/
 .pytest_cache/
+
+# IDE設定（ローカル固有）
+.claude/settings.local.json
+.cursor/settings.local.json
+
+# ビルド・実行結果
+artifacts/
+*.pyc
+.DS_Store
+
+# エディタ設定（ローカル固有）
+.vscode/settings.json
+.idea/
 
 
