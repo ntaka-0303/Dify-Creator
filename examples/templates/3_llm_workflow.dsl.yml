@@ -1,0 +1,88 @@
+version: "0.5.0"
+kind: app
+
+metadata:
+  name: "LLM Workflow"
+  description: "LLMを使用したシンプルなワークフロー"
+  icon: "🤖"
+  icon_background: "#f0f9ff"
+
+app:
+  name: "LLM Workflow"
+  mode: "workflow"
+  description: "LLMを使用したシンプルなワークフロー"
+  icon: "🤖"
+  icon_background: "#f0f9ff"
+
+workflow:
+  variable_pool:
+    - variable_name: "user_input"
+      type: "string"
+      description: "ユーザーからの入力"
+      value: ""
+
+  nodes:
+    - id: "start"
+      title: "開始"
+      type: "start"
+      position:
+        x: 100
+        y: 100
+      data: {}
+
+    - id: "llm-1"
+      title: "Claude LLM"
+      type: "llm"
+      position:
+        x: 300
+        y: 100
+      data:
+        provider_name: "anthropic"
+        model_name: "claude-3-5-sonnet-20241022"
+        temperature: 0.7
+        max_tokens: 2048
+        prompt_template: |
+          You are a helpful assistant.
+
+          User question: {{user_input}}
+
+          Please provide a helpful and accurate response.
+        variables:
+          - name: "user_input"
+            type: "string"
+            required: true
+        outputs:
+          - name: "text"
+            type: "string"
+          - name: "usage"
+            type: "object"
+
+    - id: "end"
+      title: "終了"
+      type: "end"
+      position:
+        x: 500
+        y: 100
+      data:
+        outputs:
+          - variable: "llm-1.text"
+
+  connections:
+    - source:
+        node_id: "start"
+        output: "output"
+      target:
+        node_id: "llm-1"
+        input_from: "context"
+
+    - source:
+        node_id: "llm-1"
+        output: "text"
+      target:
+        node_id: "end"
+        input_from: "input"
+
+dependencies:
+  providers:
+    - name: "anthropic"
+      version: "1.0.0"

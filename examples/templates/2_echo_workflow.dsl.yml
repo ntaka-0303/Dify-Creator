@@ -1,0 +1,51 @@
+version: "0.5.0"
+kind: app
+
+metadata:
+  name: "Echo Workflow"
+  description: "入力をそのまま返すシンプルなワークフロー"
+  icon: "🔄"
+  icon_background: "#e8f4f8"
+
+app:
+  name: "Echo Workflow"
+  mode: "workflow"
+  description: "入力をそのまま返すシンプルなワークフロー"
+  icon: "🔄"
+  icon_background: "#e8f4f8"
+
+workflow:
+  variable_pool:
+    - variable_name: "input_text"
+      type: "string"
+      description: "入力テキスト"
+      value: ""
+
+  nodes:
+    - id: "start"
+      title: "開始"
+      type: "start"
+      position:
+        x: 100
+        y: 100
+      data: {}
+
+    - id: "end"
+      title: "終了"
+      type: "end"
+      position:
+        x: 300
+        y: 100
+      data:
+        outputs:
+          - variable: "input_text"
+
+  connections:
+    - source:
+        node_id: "start"
+        output: "output"
+      target:
+        node_id: "end"
+        input_from: "input"
+
+dependencies: {}

@@ -6,6 +6,8 @@ import os
 import sys
 from typing import Any
 
+import yaml
+
 from dify_creator.console_client import (
     DifyConsoleClient,
     DifyConsoleError,
@@ -90,6 +92,101 @@ def cmd_run(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_validate(args: argparse.Namespace) -> int:
+    """
+    Validate DSL YAML file for basic structure and required fields
+    """
+    yaml_text = read_yaml_file(args.dsl)
+    try:
+        dsl_content = yaml.safe_load(yaml_text)
+    except yaml.YAMLError as e:
+        raise DifyConsoleError(f"YAML パースエラー: {e}")
+
+    if not isinstance(dsl_content, dict):
+        raise DifyConsoleError("DSL は YAML object (dictionary) である必要があります")
+
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    # Check required top-level fields
+    required_fields = ["version", "kind", "app"]
+    for field in required_fields:
+        if field not in dsl_content:
+            errors.append(f"必須フィールド '{field}' が見つかりません")
+
+    # Check version format
+    version = dsl_content.get("version")
+    if version and not isinstance(version, str):
+        errors.append(f"'version' は文字列である必要があります（現在: {type(version).__name__}）")
+
+    # Check kind value
+    kind = dsl_content.get("kind")
+    if kind and kind != "app":
+        errors.append(f"'kind' は 'app' である必要があります（現在: {kind}）")
+
+    # Check app section
+    app = dsl_content.get("app")
+    if app:
+        if not isinstance(app, dict):
+            errors.append("'app' は object（dictionary）である必要があります")
+        else:
+            if "name" not in app:
+                errors.append("'app.name' は必須です")
+            if "mode" not in app:
+                errors.append("'app.mode' は必須です")
+            else:
+                valid_modes = {"workflow", "chat", "agent"}
+                if app.get("mode") not in valid_modes:
+                    errors.append(f"'app.mode' は {valid_modes} のいずれかである必要があります（現在: {app.get('mode')}）")
+
+    # Check workflow or model_config
+    mode = dsl_content.get("app", {}).get("mode")
+    if mode == "workflow":
+        if "workflow" not in dsl_content:
+            errors.append("Workflow モードの場合、'workflow' セクションは必須です")
+        else:
+            workflow = dsl_content.get("workflow")
+            if not isinstance(workflow, dict):
+                errors.append("'workflow' は object（dictionary）である必要があります")
+            elif "nodes" in workflow and isinstance(workflow["nodes"], list):
+                node_ids = {node.get("id") for node in workflow["nodes"] if isinstance(node, dict)}
+                # Check for required start and end nodes
+                if "start" not in node_ids:
+                    warnings.append("'start' ノードが見つかりません")
+                if "end" not in node_ids:
+                    warnings.append("'end' ノードが見つかりません")
+
+    elif mode == "chat" or mode == "agent":
+        if "model_config" not in dsl_content:
+            errors.append(f"{mode.capitalize()} モードの場合、'model_config' セクションは必須です")
+        else:
+            model_config = dsl_content.get("model_config")
+            if not isinstance(model_config, dict):
+                errors.append("'model_config' は object（dictionary）である必要があります")
+
+    # Print results
+    print(f"DSL Validation: {args.dsl}")
+    print("")
+
+    if errors:
+        print(f"❌ エラー ({len(errors)}):")
+        for error in errors:
+            print(f"  - {error}")
+        print("")
+
+    if warnings:
+        print(f"⚠️  警告 ({len(warnings)}):")
+        for warning in warnings:
+            print(f"  - {warning}")
+        print("")
+
+    if not errors:
+        print("✅ 検証成功：DSLは基本的に有効です")
+        return 0
+    else:
+        return 1
+
+
 def cmd_sync(args: argparse.Namespace) -> int:
     """
     import (create/overwrite) -> (optional confirm) -> draft run -> write artifacts
@@ -163,6 +260,10 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-wait-s", type=float)
     s.add_argument("--out", help="Write result json")
     s.set_defaults(func=cmd_run)
+
+    s = sub.add_parser("validate", help="DSL YAML を検証（Difyにアップロードせずにチェック）")
+    s.add_argument("--dsl", required=True, help="DSL YAML file path")
+    s.set_defaults(func=cmd_validate)
 
     s = sub.add_parser("sync", help="import -> (confirm) -> draft run を1コマンドで")
     s.add_argument("--dsl", required=True, help="DSL YAML file path")
