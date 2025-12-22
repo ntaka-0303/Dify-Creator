@@ -2,11 +2,23 @@
 
 このドキュメントは、ClaudeCodeを使ってDifyアプリケーション（Workflow、ChatBot）を効率的に開発するためのステップバイステップガイドです。
 
+> **✨ 推奨：新しい Skill ベースのアプローチを使用してください**
+>
+> このプロジェクトは、Agent-Skillsベストプラクティスに基づいた新しいSkill構造に移行しました。
+>
+> - **`setting-up-dify-project`（Difyプロジェクトをセットアップする）Skill**: 初期セットアップ
+> - **`managing-dify-apps`（Difyアプリを管理・作成する）Skill**: アプリの作成・編集・管理
+>
+> 新しい Skills を使用すると、ClaudeCode が自動で YAML 生成・検証・テストを行います。
+> 詳細は [.claude/skills/](../.claude/skills/) を参照してください。
+>
+> 以下は従来のコマンドベースの開発フロー（参考用）です。
+
 ## 概要
 
 このプロジェクトの狙いは、**Dify Studio（ブラウザUI）を触らずに、ClaudeCodeのみでDifyアプリを開発・管理する**ことです。
 
-開発フロー：
+開発フロー（従来のコマンドベース）：
 ```
 ClaudeCode で DSL 編集
           ↓
@@ -19,6 +31,20 @@ ClaudeCode で DSL 編集
 結果確認・修正
 ```
 
+開発フロー（新しい Skill ベース - 推奨）：
+```
+managing-dify-apps Skill を選択
+          ↓
+「新規作成」または「編集」を選択
+          ↓
+ClaudeCode が自動で全処理
+  - YAML 生成・修正
+  - 検証
+  - テスト実行
+          ↓
+結果確認・修正（自動ループ）
+```
+
 ## 前提条件
 
 1. **Difyサーバーがアクセス可能**（クラウド版 `https://cloud.dify.ai` またはセルフホスト版）
@@ -27,7 +53,22 @@ ClaudeCode で DSL 編集
 
 ## セットアップ（初回のみ）
 
-### ステップ1：環境設定
+### 推奨：新しい Skill ベースのセットアップ
+
+`setting-up-dify-project` Skill を使用してください。この Skill が以下を自動で行います：
+
+```
+1. 環境情報を収集（Dify URL、メール、パスワード）
+2. .env ファイルを自動作成
+3. Docker イメージをビルド
+4. 接続をテスト
+```
+
+詳細は [.claude/skills/setting-up-dify-project/SKILL.md](../.claude/skills/setting-up-dify-project/SKILL.md) を参照してください。
+
+### 参考：従来のコマンドベースのセットアップ
+
+#### ステップ1：環境設定
 
 ```bash
 # .env.example をコピー
@@ -40,7 +81,7 @@ DIFY_PASSWORD="your-password"
 DIFY_VERIFY_SSL=true
 ```
 
-### ステップ2：ログイン確認
+#### ステップ2：ログイン確認
 
 ```bash
 docker compose run --rm dify-creator login
