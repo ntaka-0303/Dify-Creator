@@ -1,66 +1,66 @@
 #!/bin/bash
-# Verify Dify project setup
+# Difyプロジェクトのセットアップを検証
 
-# Usage:
+# 使い方:
 #   bash scripts/verify-setup.sh
 #
-# This script checks if all required setup steps have been completed
+# このスクリプトは必要なセットアップ手順がすべて完了しているかを確認します
 
-echo "Verifying Dify project setup..."
+echo "Difyプロジェクトのセットアップを検証中..."
 echo ""
 
-# Check for .env file
-echo "1. Checking .env configuration..."
+# .envファイルを確認
+echo "1. .env設定を確認中..."
 if [ -f ".env" ]; then
-    echo "   ✅ .env file exists"
+    echo "   ✅ .envファイルが存在します"
 
-    # Check for required variables
+    # 必須変数を確認
     if grep -q "DIFY_BASE_URL" .env && \
        grep -q "DIFY_EMAIL" .env && \
        grep -q "DIFY_PASSWORD" .env; then
-        echo "   ✅ Required environment variables configured"
+        echo "   ✅ 必須環境変数が設定されています"
     else
-        echo "   ❌ Missing required environment variables"
+        echo "   ❌ 必須環境変数が不足しています"
         exit 1
     fi
 else
-    echo "   ❌ .env file not found. Run setup first."
+    echo "   ❌ .envファイルが見つかりません。最初にセットアップを実行してください。"
     exit 1
 fi
 
 echo ""
-echo "2. Checking Docker setup..."
+echo "2. Dockerセットアップを確認中..."
 if docker --version > /dev/null 2>&1; then
-    echo "   ✅ Docker is installed"
+    echo "   ✅ Dockerがインストールされています"
 else
-    echo "   ❌ Docker is not installed"
+    echo "   ❌ Dockerがインストールされていません"
     exit 1
 fi
 
-# Check for docker-compose
+# docker-composeを確認
 if docker compose version > /dev/null 2>&1; then
-    echo "   ✅ Docker Compose is available"
+    echo "   ✅ Docker Composeが利用可能です"
 else
-    echo "   ❌ Docker Compose is not available"
+    echo "   ❌ Docker Composeが利用できません"
     exit 1
 fi
 
 echo ""
-echo "3. Testing Dify connection..."
+echo "3. Dify接続をテスト中..."
 docker compose run --rm dify-creator login > /dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    echo "   ✅ Successfully connected to Dify"
+    echo "   ✅ Difyへの接続に成功しました"
 else
-    echo "   ❌ Failed to connect to Dify"
-    echo "   Check your .env configuration and verify your credentials"
+    echo "   ❌ Difyへの接続に失敗しました"
+    echo "   .env設定を確認し、認証情報を確認してください"
     exit 1
 fi
 
 echo ""
-echo "✅ All setup verification checks passed!"
+echo "✅ すべてのセットアップ検証チェックに合格しました！"
 echo ""
-echo "You're ready to use Dify-Creator. Try:"
-echo "  - Creating a new app: dify-new-app"
-echo "  - Editing an app: dify-edit-app"
-echo "  - Managing apps: managing-dify-apps"
+echo "Dify-Creatorを使用する準備ができました。次を試してください:"
+echo "  - 新しいアプリを作成: dify-new-app"
+echo "  - アプリを編集: dify-edit-app"
+echo "  - アプリを管理: managing-dify-apps"

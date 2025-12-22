@@ -37,20 +37,20 @@ class ConsoleConfig:
 
     @property
     def api_base(self) -> str:
-        # Dify OSS uses url_prefix="/console/api"
+        # Dify OSS は url_prefix="/console/api" を使用
         return _join_url(self.base_url, "console/api")
 
 
 class DifyConsoleClient:
     """
-    Minimal client for Dify Console API (management endpoints under /console/api).
+    Dify Console API (管理エンドポイント /console/api 配下) の最小限のクライアント。
 
-    Auth model (per OSS implementation):
-    - POST /console/api/login sets cookies:
+    認証モデル (OSS実装に準拠):
+    - POST /console/api/login でCookieを設定:
       - access_token (httpOnly)
       - refresh_token (httpOnly)
-      - csrf_token (readable)
-    - For unsafe methods, send header X-CSRF-Token matching csrf_token cookie.
+      - csrf_token (読み取り可能)
+    - 安全でないメソッドの場合、csrf_token Cookieと一致する X-CSRF-Token ヘッダーを送信。
     """
 
     def __init__(self, config: ConsoleConfig):
@@ -67,7 +67,7 @@ class DifyConsoleClient:
         return cls(ConsoleConfig(base_url=base_url, verify_ssl=verify_ssl, timeout_s=timeout_s))
 
     def _csrf(self) -> str | None:
-        # Cookie name in OSS: csrf_token
+        # OSS での Cookie 名: csrf_token
         return self.session.cookies.get("csrf_token")
 
     def _request(
@@ -87,7 +87,7 @@ class DifyConsoleClient:
         if extra_headers:
             headers.update(extra_headers)
 
-        # CSRF for unsafe methods
+        # 安全でないメソッド用の CSRF
         if method.upper() not in {"GET", "HEAD", "OPTIONS"}:
             csrf = self._csrf()
             if csrf:
@@ -116,8 +116,8 @@ class DifyConsoleClient:
 
     def login(self, *, email: str, password_plain: str, remember_me: bool = False) -> None:
         """
-        Login via /console/api/login.
-        Note: password is expected to be Base64 encoded by OSS implementation.
+        /console/api/login 経由でログイン。
+        注意: OSS実装ではパスワードはBase64エンコードされることが期待されています。
         """
         resp = self._request(
             "POST",
@@ -130,7 +130,7 @@ class DifyConsoleClient:
         )
         self._raise_for_status(resp)
 
-        # sanity check
+        # 健全性チェック
         if not self._csrf():
             raise DifyConsoleError("ログイン後に csrf_token Cookie が見つかりません（Difyの設定/挙動を確認してください）")
 
@@ -146,7 +146,7 @@ class DifyConsoleClient:
         icon: str | None = None,
         icon_background: str | None = None,
     ) -> dict[str, Any]:
-        # OSS expects: mode in {"yaml-content","yaml-url"}
+        # OSS は mode を {"yaml-content","yaml-url"} のいずれかで期待
         if yaml_content and yaml_url:
             raise ValueError("yaml_content と yaml_url は同時指定できません")
         if not yaml_content and not yaml_url:
@@ -164,15 +164,15 @@ class DifyConsoleClient:
             "icon_background": icon_background,
             "app_id": app_id,
         }
-        # drop None keys
+        # None のキーを削除
         payload = {k: v for k, v in payload.items() if v is not None}
 
         resp = self._request("POST", "/apps/imports", json_body=payload)
-        # import returns 200/202/400 depending on status
+        # import はステータスに応じて 200/202/400 を返す
         if resp.status_code in {200, 202}:
             return resp.json()
         self._raise_for_status(resp)
-        return {}  # unreachable
+        return {}  # 到達不可
 
     def confirm_import(self, import_id: str) -> dict[str, Any]:
         resp = self._request("POST", f"/apps/imports/{import_id}/confirm")
@@ -203,7 +203,7 @@ class DifyConsoleClient:
             payload["files"] = files
         headers: dict[str, str] = {}
         if external_trace_id:
-            # Dify supports external trace id propagation
+            # Dify は外部トレースID の伝播をサポート
             headers["X-External-Trace-Id"] = external_trace_id
 
         resp = self._request(
@@ -212,15 +212,15 @@ class DifyConsoleClient:
             json_body=payload,
             stream=True,
             extra_headers=headers,
-            timeout_s=None,  # allow long running
+            timeout_s=None,  # 長時間実行を許可
         )
         self._raise_for_status(resp)
         return resp
 
     def iter_sse_json(self, resp: requests.Response) -> Iterator[dict[str, Any]]:
         """
-        Parse SSE-ish streaming responses emitted by helper.compact_generate_response().
-        We only parse lines like: 'data: {json}'
+        helper.compact_generate_response() から発行される SSE 風のストリーミングレスポンスを解析。
+        'data: {json}' のような行のみを解析します。
         """
         for raw_line in resp.iter_lines(decode_unicode=True):
             if not raw_line:
@@ -236,7 +236,7 @@ class DifyConsoleClient:
             try:
                 yield json.loads(data_str)
             except json.JSONDecodeError:
-                # Some events may send non-JSON data; ignore.
+                # 一部のイベントは非JSONデータを送信する可能性があるため無視
                 continue
 
     def run_draft_workflow_collect(
@@ -249,9 +249,9 @@ class DifyConsoleClient:
         max_wait_s: float | None = None,
     ) -> dict[str, Any]:
         """
-        Collect streaming events into:
-        - events: list of json events
-        - last_event: last json event (if any)
+        ストリーミングイベントを以下に収集:
+        - events: JSON イベントのリスト
+        - last_event: 最後の JSON イベント (存在する場合)
         """
         resp = self.run_draft_workflow_stream(
             app_id=app_id, inputs=inputs, files=files, external_trace_id=external_trace_id
@@ -270,7 +270,7 @@ class DifyConsoleClient:
 
 
 def load_dotenv_if_present() -> None:
-    # optional; no-op if python-dotenv is not installed
+    # オプション; python-dotenv がインストールされていない場合は何もしない
     try:
         from dotenv import load_dotenv  # type: ignore
     except Exception:

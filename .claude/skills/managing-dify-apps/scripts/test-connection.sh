@@ -1,21 +1,21 @@
 #!/bin/bash
-# Test connection to Dify
+# Dify接続をテスト
 
-# Usage:
+# 使い方:
 #   bash scripts/test-connection.sh
 #
-# This script verifies that the Dify connection is working
-# and credentials are properly configured.
+# このスクリプトはDify接続が機能していること、
+# および認証情報が正しく設定されていることを確認します。
 
-echo "Testing Dify connection..."
+echo "Dify接続をテスト中..."
 docker compose run --rm dify-creator login
 
-# Check exit status
+# 終了ステータスを確認
 if [ $? -eq 0 ]; then
-    echo "✅ Connection successful!"
+    echo "✅ 接続成功！"
     exit 0
 else
-    echo "❌ Connection failed. Check .env configuration:"
+    echo "❌ 接続失敗。.env設定を確認してください:"
     echo "   - DIFY_BASE_URL"
     echo "   - DIFY_EMAIL"
     echo "   - DIFY_PASSWORD"

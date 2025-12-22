@@ -1,18 +1,18 @@
 #!/bin/bash
-# Validate DSL configuration
+# DSL設定を検証
 
-# Usage:
-#   bash scripts/run-validation.sh <path-to-dsl>
+# 使い方:
+#   bash scripts/run-validation.sh <DSLファイルのパス>
 #
-# Example:
+# 例:
 #   bash scripts/run-validation.sh app.dsl.yml
 
 DSL_FILE="${1:-app.dsl.yml}"
 
 if [ ! -f "$DSL_FILE" ]; then
-    echo "❌ Error: DSL file not found: $DSL_FILE"
+    echo "❌ エラー: DSLファイルが見つかりません: $DSL_FILE"
     exit 1
 fi
 
-echo "Validating DSL: $DSL_FILE"
+echo "DSLを検証中: $DSL_FILE"
 docker compose run --rm dify-creator validate --dsl "$DSL_FILE"
