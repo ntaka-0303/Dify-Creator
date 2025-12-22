@@ -12,5 +12,8 @@ services:
       - ./:/app
     # default; override via `docker compose run ... <subcommand>`
     command: ["--help"]
+    # Linux環境でhost.docker.internalを使用可能にする
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 
