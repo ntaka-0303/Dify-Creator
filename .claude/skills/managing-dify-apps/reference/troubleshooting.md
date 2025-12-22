@@ -1,200 +1,200 @@
-# Troubleshooting Guide
+# トラブルシューティングガイド
 
-Common issues and solutions when using the Dify app management tools.
+Difyアプリ管理ツール使用時の一般的な問題と解決方法です。
 
-## Contents
-- Connection and authentication issues
-- Validation errors
-- Test execution problems
-- Workflow errors
-- Model configuration issues
-- Best practices to prevent problems
+## 目次
+- 接続と認証の問題
+- 検証エラー
+- テスト実行の問題
+- ワークフローエラー
+- モデル設定の問題
+- 問題を防ぐためのベストプラクティス
 
 ---
 
-## Connection and authentication issues
+## 接続と認証の問題
 
-### "Connection refused" or "Could not connect to Dify"
+### 「接続が拒否されました」または「Difyに接続できません」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Could not connect to https://cloud.dify.ai
 Connection refused
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Check internet connection**
+1. **インターネット接続を確認**
    ```bash
    ping cloud.dify.ai
    ```
 
-2. **Verify Dify credentials** in `.env`:
+2. **`.env`のDify認証情報を確認**：
    ```bash
    cat .env | grep DIFY
    ```
 
-3. **Test login manually** (for local Dify instances):
+3. **ログイン手動テスト**（ローカルDifyインスタンスの場合）：
    ```bash
    docker compose run --rm dify-creator login
    ```
 
-4. **Check URL format**:
-   - Cloud: `https://cloud.dify.ai` ✅
-   - Local: `http://localhost:5001` (no HTTPS) ✅
-   - Custom: Ensure URL is complete and accessible
+4. **URLフォーマットを確認**：
+   - クラウド：`https://cloud.dify.ai` ✅
+   - ローカル：`http://localhost:5001`（HTTPS不要） ✅
+   - カスタム：URLが完全かつアクセス可能であることを確認
 
-5. **For self-hosted Dify with SSL issues**:
-   - If using self-signed certificates, update `.env`:
+5. **自己ホスト型DifyでSSLの問題がある場合**：
+   - 自己署名証明書を使用している場合は、`.env`を更新：
      ```
      DIFY_VERIFY_SSL=false
      ```
 
 ---
 
-### "Invalid credentials" or "Authentication failed"
+### 「無効な認証情報」または「認証失敗」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Invalid email or password
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Verify credentials are correct**:
-   - Are you using the Dify account email? (not API key)
-   - Is the password correct?
-   - Has the password been changed recently?
+1. **認証情報が正しいか確認**：
+   - Difyアカウントメールアドレスを使用していますか？（APIキーではなく）
+   - パスワードは正しいですか？
+   - パスワードは最近変更されていませんか？
 
-2. **Update `.env` with correct credentials**:
+2. **`.env`を正しい認証情報で更新**：
    ```bash
-   # Edit .env
+   # .env を編集
    DIFY_EMAIL=your-actual-email@example.com
    DIFY_PASSWORD=your-actual-password
    ```
 
-3. **Re-run setup**:
+3. **セットアップを再実行**：
    ```bash
    /dify-setup
    ```
 
-4. **Test connection**:
+4. **接続をテスト**：
    ```bash
    docker compose run --rm dify-creator login
    ```
 
 ---
 
-## Validation errors
+## 検証エラー
 
-### "Validation failed: Required field not found"
+### 「検証失敗：必須フィールドが見つかりません」
 
-**Symptoms:**
+**症状：**
 ```
 ❌ Validation failed (2 errors):
   - Required field 'workflow' not found
   - 'app.mode' is invalid
 ```
 
-**Cause:** YAML structure is incomplete or has wrong mode.
+**原因：** YAML構造が不完全であるか、モードが誤っています。
 
-**Solutions:**
+**解決方法：**
 
-1. **Check app.mode matches your configuration**:
+1. **app.modeが設定と一致するか確認**：
    ```yaml
    app:
-     mode: "chat"      # or "workflow" or "agent"
+     mode: "chat"      # または "workflow" または "agent"
    ```
 
-2. **Ensure required sections exist**:
-   - For `mode: chat` → need `model_config` section
-   - For `mode: workflow` → need `workflow` section
-   - For `mode: agent` → need `model_config` section
+2. **必須セクションが存在することを確認**：
+   - `mode: chat`の場合 → `model_config`セクションが必要
+   - `mode: workflow`の場合 → `workflow`セクションが必要
+   - `mode: agent`の場合 → `model_config`セクションが必要
 
-3. **Use a template as reference**: See [templates.md](templates.md)
+3. **テンプレートを参考に使用**：[templates.md](templates.md)を参照
 
 ---
 
-### "Invalid field value" or "Type mismatch"
+### 「無効なフィールド値」または「型の不一致」
 
-**Symptoms:**
+**症状：**
 ```
 Error: 'temperature' must be a number between 0.0 and 1.0
 Error: 'max_tokens' must be a positive integer
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Check field types**:
+1. **フィールドの型を確認**：
    ```yaml
-   # ✅ Correct
-   temperature: 0.7          # number
-   max_tokens: 2048          # integer
-   system_prompt: "text"     # string
+   # ✅ 正しい
+   temperature: 0.7          # 数字
+   max_tokens: 2048          # 整数
+   system_prompt: "text"     # 文字列
 
-   # ❌ Wrong
-   temperature: "0.7"        # string (should be number)
-   max_tokens: "2048"        # string (should be integer)
+   # ❌ 間違い
+   temperature: "0.7"        # 文字列（数字である必要がある）
+   max_tokens: "2048"        # 文字列（整数である必要がある）
    ```
 
-2. **For temperature**: must be between 0.0 and 1.0
-3. **For max_tokens**: must be positive integer (typical: 512-4096)
+2. **温度**：0.0～1.0の間である必要があります
+3. **最大トークン**：正の整数である必要があります（通常：512-4096）
 
 ---
 
-### "YAML syntax error"
+### 「YAMLの構文エラー」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Failed to parse YAML at line 25: unexpected indent
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Check indentation** (YAML is strict):
+1. **インデントを確認**（YAMLは厳密です）：
    ```yaml
-   # ✅ Correct - consistent 2-space indentation
+   # ✅ 正しい - 一貫した2スペースインデント
    model:
      provider: "anthropic"
      name: "claude-3-5-sonnet-20241022"
 
-   # ❌ Wrong - inconsistent indentation
+   # ❌ 間違い - 一貫性のないインデント
    model:
     provider: "anthropic"
      name: "claude-3-5-sonnet-20241022"
    ```
 
-2. **No tabs** - use spaces only:
+2. **タブなし** - スペースのみを使用：
    ```bash
-   # Check for tabs
+   # タブをチェック
    grep -P '\t' app.dsl.yml
-   # (should return nothing)
+   # （何も返されないはず）
    ```
 
-3. **Use a YAML validator**:
+3. **YAMLバリデーターを使用**：
    ```bash
    python3 -c "import yaml; yaml.safe_load(open('app.dsl.yml'))"
    ```
 
-4. **Common YAML issues**:
-   - Missing colons after keys
-   - Quotes not properly closed
-   - Lists starting with `-` not properly indented
+4. **YAMLの一般的な問題**：
+   - キーの後にコロンが見当たらない
+   - 引用符が正しく閉じられていない
+   - `-`で始まるリストが適切にインデントされていない
 
 ---
 
-## Test execution problems
+## テスト実行の問題
 
-### "Test returned unexpected format"
+### 「テストが予期しないフォーマットを返した」
 
-**Symptoms:**
+**症状：**
 ```
 Test ran successfully but output format is wrong
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Check system_prompt** specifies output format:
+1. **system_prompt**が出力フォーマットを指定しているか確認：
    ```yaml
    system_prompt: |
      Return responses in JSON format:
@@ -204,11 +204,11 @@ Test ran successfully but output format is wrong
      }
    ```
 
-2. **Test with simple inputs** first:
-   - Before complex cases, test with basic input
-   - Verify the app understands basic requests
+2. **最初にシンプルな入力でテスト**：
+   - 複雑なケースの前に、基本的な入力でテスト
+   - アプリが基本的なリクエストを理解していることを確認
 
-3. **Check prompt_variables** are passed correctly:
+3. **prompt_variables**が正しく渡されているか確認：
    ```yaml
    prompt_variables:
      - variable_name: "output_format"
@@ -217,79 +217,79 @@ Test ran successfully but output format is wrong
 
 ---
 
-### "No output from test" or "Empty response"
+### 「テストから出力がない」または「空の応答」
 
-**Symptoms:**
+**症状：**
 ```
 Test execution completed but result is empty
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Check if API key is valid**:
+1. **APIキーが有効か確認**：
    ```bash
    docker compose run --rm dify-creator login
    ```
 
-2. **Verify model is available**:
-   - Check model name: `claude-3-5-sonnet-20241022` or latest
-   - Confirm your account has access to this model
+2. **モデルが利用可能か確認**：
+   - モデル名を確認：`claude-3-5-sonnet-20241022`または最新
+   - アカウントがこのモデルへのアクセス権を持っていることを確認
 
-3. **Check input parameters** in `examples/inputs.json`:
+3. **`examples/inputs.json`内の入力パラメーターを確認**：
    ```json
    {
      "input_text": "your test input here"
    }
    ```
 
-4. **Look at full error log**:
+4. **完全なエラーログを確認**：
    ```bash
    cat artifacts/run_result.json
    ```
 
 ---
 
-### "App timed out during test"
+### 「テスト中にアプリがタイムアウトした」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Test execution timed out after 30 seconds
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Reduce max_tokens**:
+1. **最大トークンを削減**：
    ```yaml
    model:
-     max_tokens: 1024  # reduce from 2048
+     max_tokens: 1024  # 2048から削減
    ```
 
-2. **Simplify the prompt**:
-   - Remove unnecessary instructions
-   - Make system_prompt more concise
+2. **プロンプトをシンプル化**：
+   - 不必要な指示を削除
+   - system_promptをよりコンパクトに
 
-3. **Check for infinite loops** in workflows:
-   - Verify conditional branches have exit conditions
-   - No circular node references
+3. **ワークフロー内の無限ループをチェック**：
+   - 条件分岐に終了条件があることを確認
+   - 循環ノード参照がないこと
 
-4. **For slow API integrations**:
-   - Increase timeout in configuration (if available)
-   - Test with faster endpoints
+4. **遅いAPI統合の場合**：
+   - 設定でタイムアウトを増やす（利用可能な場合）
+   - より高速なエンドポイントでテスト
 
 ---
 
-## Workflow-specific issues
+## ワークフロー固有の問題
 
-### "Node not found" error
+### 「ノードが見つかりません」エラー
 
-**Symptoms:**
+**症状：**
 ```
 Error: Reference to undefined node 'process_step'
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Check node ID spelling** (case-sensitive):
+1. **ノードID表記を確認**（大文字小文字を区別）：
    ```yaml
    nodes:
      - id: "process_step"    # Define first
@@ -300,24 +300,24 @@ Error: Reference to undefined node 'process_step'
          data: "${process_step.output}"  # Correct reference
    ```
 
-2. **Verify all node IDs are unique**:
+2. **すべてのノードIDがユニークであることを確認**：
    ```bash
    grep "id:" app.dsl.yml | sort | uniq -d
-   # (should return nothing if all unique)
+   # （すべてがユニークな場合は何も返されない）
    ```
 
 ---
 
-### "Variable reference is invalid"
+### 「変数参照が無効です」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Undefined variable reference: ${unknown_var.output}
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Check variable pool** defines variables:
+1. **変数プール**が変数を定義しているか確認：
    ```yaml
    workflow:
      variable_pool:
@@ -325,74 +325,74 @@ Error: Undefined variable reference: ${unknown_var.output}
          type: "string"
    ```
 
-2. **Verify node output variables**:
+2. **ノード出力変数を確認**：
    ```yaml
    nodes:
      - id: "my_step"
        type: "llm"
-       # Has output...
+       # 出力を持つ...
 
-   # Later reference:
-   input: "${my_step.output}"  # Correct
+   # 後の参照：
+   input: "${my_step.output}"  # 正しい
    ```
 
-3. **Common mistakes**:
+3. **一般的なミス**：
    ```yaml
-   # ❌ Wrong - undefined node
+   # ❌ 間違い - 定義されていないノード
    value: "${undefined_node.output}"
 
-   # ❌ Wrong - node exists but typo in output
-   value: "${my_node.result}"  # Should be .output
+   # ❌ 間違い - ノードは存在するが出力に誤字
+   value: "${my_node.result}"  # .outputであるべき
 
-   # ✅ Correct
+   # ✅ 正しい
    value: "${my_node.output}"
    ```
 
 ---
 
-## Model configuration issues
+## モデル設定の問題
 
-### "Model not available" or "Quota exceeded"
+### 「モデルが利用不可」または「クォータを超過」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Model claude-3-5-sonnet-20241022 not available
 Error: Rate limit exceeded
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Check available models**:
-   - Visit Dify console to see which models your account has access to
-   - Update `model.name` to an available model
+1. **利用可能なモデルを確認**：
+   - Difyコンソールにアクセスして、アカウントがどのモデルにアクセスできるか確認
+   - `model.name`を利用可能なモデルに更新
 
-2. **For quota exceeded**:
-   - Wait before retrying
-   - Reduce `max_tokens` to use fewer resources
-   - Check account usage limits
+2. **クォータを超過した場合**：
+   - 再試行する前に待つ
+   - `max_tokens`を削減してリソース使用量を減らす
+   - アカウント使用制限を確認
 
 ---
 
-### "Responses are inconsistent" or "Quality varies"
+### 「応答が矛盾している」または「品質が変動する」
 
-**Solutions:**
+**解決方法：**
 
-1. **Lower temperature** for consistency:
+1. **一貫性を高めるため温度を下げる**：
    ```yaml
    model:
      temperature: 0.3  # More consistent than 0.7
    ```
 
-2. **Add specific constraints** in system_prompt:
+2. **system_promptに具体的な制約を追加**：
    ```yaml
    system_prompt: |
-     Always follow these rules:
-     1. Provide exact format: [A], [B], [C]
-     2. No extra explanation
-     3. If unsure, say "Unknown"
+     これらのルールに常に従う：
+     1. 正確なフォーマットを提供：[A]、[B]、[C]
+     2. 余分な説明なし
+     3. 不確実な場合は「不明」と言う
    ```
 
-3. **Use prompt_variables** for dynamic content:
+3. **動的コンテンツに prompt_variables を使用**：
    ```yaml
    prompt_variables:
      - variable_name: "tone"
@@ -403,123 +403,123 @@ Error: Rate limit exceeded
 
 ---
 
-## Upload issues
+## アップロード問題
 
-### "Upload failed: app_id not found"
+### 「アップロード失敗：app_idが見つかりません」
 
-**Symptoms:**
+**症状：**
 ```
 Error: App with ID 'abc123' not found
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Verify app_id**:
-   - From Dify web: `https://cloud.dify.ai/app/YOUR_APP_ID/...`
-   - Is it correct?
+1. **app_idを確認**：
+   - Dify web：`https://cloud.dify.ai/app/YOUR_APP_ID/...`
+   - 正しいですか？
 
-2. **Check app still exists**:
-   - Log into Dify web console
-   - Look for the app in your apps list
-   - May have been deleted accidentally
+2. **アプリがまだ存在するか確認**：
+   - Difyウェブコンソールにログイン
+   - アプリリストでアプリを探す
+   - 誤って削除された可能性があります
 
-3. **Use correct format**:
-   - app_id should be alphanumeric
-   - No extra spaces or characters
+3. **正しいフォーマットを使用**：
+   - app_idは英数字である必要があります
+   - 余分なスペースや文字がない
 
 ---
 
-### "Upload failed: permission denied"
+### 「アップロード失敗：アクセス許可が拒否されました」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Permission denied. You don't have access to this app.
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Verify you own the app**:
-   - Logged in as the correct user?
-   - Check Dify console to confirm you own the app
+1. **アプリを所有していることを確認**：
+   - 正しいユーザーとしてログインしていますか？
+   - Difyコンソールをチェックしてアプリを所有していることを確認
 
-2. **Check account status**:
-   - Is your Dify account active?
-   - Have you been locked out?
+2. **アカウントステータスを確認**：
+   - Difyアカウントはアクティブですか？
+   - ロックアウトされていませんか？
 
-3. **Verify credentials** in `.env` match the account that owns the app
-
----
-
-## General troubleshooting checklist
-
-**Before reporting issues, verify:**
-
-```
-Connection & Auth:
-- [ ] Internet connection is working
-- [ ] .env has correct credentials
-- [ ] Login test passes: docker compose run --rm dify-creator login
-- [ ] Using cloud.dify.ai or correct URL for self-hosted
-
-Configuration:
-- [ ] YAML validates: docker compose run --rm dify-creator validate --dsl app.dsl.yml
-- [ ] Required fields present (version, kind, app, mode)
-- [ ] No indentation/syntax errors in YAML
-- [ ] All node IDs are unique
-- [ ] All variable references exist
-
-Execution:
-- [ ] Test inputs in examples/inputs.json are valid
-- [ ] Model is available in your account
-- [ ] API key/credentials haven't expired
-- [ ] No timeout issues (check max_tokens and prompt)
-```
+3. **`.env`の認証情報**がアプリを所有するアカウントと一致することを確認
 
 ---
 
-## Getting more help
+## 一般的なトラブルシューティングチェックリスト
 
-**If issues persist:**
+**問題を報告する前に確認：**
 
-1. **Collect diagnostic information**:
+```
+接続と認証：
+- [ ] インターネット接続が機能している
+- [ ] .envが正しい認証情報を持っている
+- [ ] ログインテストが成功：docker compose run --rm dify-creator login
+- [ ] cloud.dify.aiまたは自己ホスト版の正しいURLを使用
+
+設定：
+- [ ] YAMLが検証済み：docker compose run --rm dify-creator validate --dsl app.dsl.yml
+- [ ] 必須フィールドが存在（version、kind、app、mode）
+- [ ] YAMLにインデント/構文エラーがない
+- [ ] すべてのノードIDがユニーク
+- [ ] すべての変数参照が存在
+
+実行：
+- [ ] examples/inputs.json内のテスト入力が有効
+- [ ] モデルがアカウントで利用可能
+- [ ] APIキー/認証情報が期限切れでない
+- [ ] タイムアウト問題がない（max_tokensとプロンプトを確認）
+```
+
+---
+
+## さらにヘルプを得る
+
+**問題が解決しない場合：**
+
+1. **診断情報を収集**：
    ```bash
-   # Show validation errors
+   # 検証エラーを表示
    docker compose run --rm dify-creator validate --dsl app.dsl.yml
 
-   # Show test result details
+   # テスト結果の詳細を表示
    cat artifacts/run_result.json | python3 -m json.tool
    ```
 
-2. **Review recent changes**:
-   - What was changed since last successful run?
-   - Can you revert to a working version?
+2. **最近の変更を確認**：
+   - 最後の正常な実行以降に何が変更されましたか？
+   - 動作するバージョンに戻すことができますか？
 
-3. **Try a minimal example**:
-   - Start with simplest template (Template 1 or 2)
-   - Does it work?
-   - Gradually add complexity
+3. **最小限の例を試す**：
+   - 最もシンプルなテンプレート（テンプレート1または2）で開始
+   - 動作しますか？
+   - 徐々に複雑さを追加
 
-4. **Ask Claude for help**:
-   - Share the error message and relevant YAML section
-   - Describe what you're trying to do
-   - Include steps to reproduce
+4. **Claudeに助けを求める**：
+   - エラーメッセージと関連するYAMLセクションを共有
+   - 何をしようとしているのかを説明
+   - 再現手順を含める
 
 ---
 
-## Prevention tips
+## 予防のヒント
 
-✅ **DO:**
-- Validate after every change
-- Test with simple inputs first
-- Keep prompts concise and clear
-- Use templates as starting points
-- Commit working versions to git
-- Test locally before updating live app
+✅ **すべきこと：**
+- 変更後毎回検証
+- 最初にシンプルな入力でテスト
+- プロンプトは簡潔明確に
+- テンプレートを出発点として使用
+- 動作するバージョンをgitにコミット
+- ライブアプリを更新する前にローカルでテスト
 
-❌ **DON'T:**
-- Make multiple changes without validating between them
-- Skip validation before uploading
-- Copy-paste YAML without checking syntax
-- Use inconsistent indentation
-- Test only with edge cases first
-- Upload without testing locally
+❌ **してはいけないこと：**
+- 検証せずに複数の変更を行う
+- アップロード前に検証をスキップ
+- 構文を確認せずにYAMLをコピー&ペースト
+- 一貫性のないインデントを使用
+- エッジケースでのみテスト
+- ローカルでのテストなしにアップロード

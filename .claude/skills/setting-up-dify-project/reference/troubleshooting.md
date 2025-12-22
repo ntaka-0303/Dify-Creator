@@ -1,558 +1,558 @@
-# Setup Troubleshooting
+# セットアップのトラブルシューティング
 
-Common setup issues and solutions.
+一般的なセットアップの問題と解決方法です。
 
-## Contents
-- Credential issues
-- Docker and environment issues
-- Connection problems
-- File permission issues
-- Platform-specific issues
+## 目次
+- 認証情報の問題
+- Dockerと環境の問題
+- 接続の問題
+- ファイル権限の問題
+- プラットフォーム固有の問題
 
 ---
 
-## Credential issues
+## 認証情報の問題
 
-### "Invalid credentials" or "Authentication failed"
+### 「無効な認証情報」または「認証失敗」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Invalid email or password
 Error: Unauthorized
 ```
 
-**Root causes and solutions:**
+**根本的な原因と解決方法：**
 
-1. **Wrong email format**:
-   - Verify you're using your **account email**, not API key
-   - Check for typos and extra spaces
-   - Confirm email is associated with your Dify account
+1. **間違ったメール形式**：
+   - **アカウントメール**を使用していることを確認（APIキーではなく）
+   - タイプミスと余分なスペースを確認
+   - メールがDifyアカウントに関連付けられていることを確認
 
-2. **Incorrect password**:
-   - Try logging in via web UI first (https://cloud.dify.ai)
-   - Verify password works there
-   - Check if recently changed
+2. **パスワード間違い**：
+   - 最初にweb UIで<bログインを試す（https://cloud.dify.ai）
+   - パスワードがそこで機能することを確認
+   - 最近変更されていないか確認
 
-3. **Wrong Dify instance**:
-   - Cloud users: ensure `https://cloud.dify.ai`
-   - Self-hosted: use correct URL and port
-   - Example: `http://localhost:5001` or `https://dify.company.com`
+3. **間違ったDifyインスタンス**：
+   - クラウドユーザー：`https://cloud.dify.ai`であることを確認
+   - 自己ホスト型：正しいURLとポートを使用
+   - 例：`http://localhost:5001`または`https://dify.company.com`
 
-**Fix procedure:**
+**修正手順：**
 
 ```bash
-# 1. Verify credentials in Dify web UI first
-# Go to https://cloud.dify.ai and log in manually
+# 1. 最初にDify web UIで認証情報を確認
+# https://cloud.dify.ai にアクセスして手動でログイン
 
-# 2. Update .env with correct values
+# 2. 正しい値で.envを更新
 nano .env
-# Correct:
+# 正しい：
 # DIFY_EMAIL=your-actual-email@example.com
 # DIFY_PASSWORD=your-actual-password
 # DIFY_BASE_URL=https://cloud.dify.ai
 
-# 3. Test login again
+# 3. ログインを再度テスト
 docker compose run --rm dify-creator login
 ```
 
 ---
 
-### "Account locked" or "Too many login attempts"
+### 「アカウントがロック」または「ログイン試行が多すぎます」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Account locked. Too many failed attempts.
 ```
 
-**Solution:**
+**解決方法：**
 
-1. **Wait 15-30 minutes** before retrying
-2. **Verify credentials are correct**
-3. **Reset password** if possible via Dify web UI
-4. **Contact Dify support** if locked for extended time
+1. **15～30分待機**してから再試行
+2. **認証情報が正しいことを確認**
+3. **パスワードをリセット**（Dify web UIで可能な場合）
+4. **長時間ロックされている場合はDifyサポートに連絡**
 
 ---
 
-## Docker and environment issues
+## Dockerと環境の問題
 
-### "Docker is not installed" or "docker command not found"
+### 「Dockerがインストールされていません」または「dockerコマンドが見つかりません」
 
-**Symptoms:**
+**症状：**
 ```
 Command 'docker' not found
 ```
 
-**Solution:**
+**解決方法：**
 
-1. **Install Docker**:
+1. **Dockerをインストール**：
    - Mac: https://docs.docker.com/desktop/install/mac-install/
    - Windows: https://docs.docker.com/desktop/install/windows-install/
    - Linux: https://docs.docker.com/engine/install/
 
-2. **Verify installation**:
+2. **インストールを確認**：
    ```bash
    docker --version
-   # Should output: Docker version 20.x or higher
+   # 出力例：Docker version 20.x or higher
    ```
 
-3. **Start Docker daemon** (if installed but not running):
-   - **Mac**: Docker Desktop app
-   - **Windows**: Docker Desktop app
-   - **Linux**: `sudo systemctl start docker`
+3. **Dockerデーモンを開始**（インストール済みだが実行されていない場合）：
+   - **Mac**：Docker Desktopアプリ
+   - **Windows**：Docker Desktopアプリ
+   - **Linux**：`sudo systemctl start docker`
 
 ---
 
-### "Docker daemon is not running"
+### 「Dockerデーモンが実行されていません」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Cannot connect to Docker daemon at unix:///var/run/docker.sock
 ```
 
-**Solution:**
+**解決方法：**
 
-1. **On Mac/Windows**: Open Docker Desktop application
-2. **On Linux**:
+1. **Mac/Windowsの場合**：Docker Desktopアプリケーションを開く
+2. **Linuxの場合**：
    ```bash
    sudo systemctl start docker
-   # Or:
+   # または：
    sudo service docker start
    ```
 
-3. **Verify it's running**:
+3. **実行していることを確認**：
    ```bash
    docker ps
-   # Should list running containers (may be empty)
+   # 実行中のコンテナをリストアップ（空の場合がある）
    ```
 
 ---
 
-### "Docker build fails"
+### 「Dockerビルド失敗」
 
-**Symptoms:**
+**症状：**
 ```
 Error during build: ...
 Failed to build image
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Clean rebuild** (removes cache):
+1. **クリーンリビルド**（キャッシュを削除）：
    ```bash
    docker compose build --no-cache
    ```
 
-2. **Check disk space**:
+2. **ディスク容量を確認**：
    ```bash
    df -h /
-   # Need at least 5GB free
-   # If low: delete unused Docker images/containers
+   # 最低5GB空いている必要があります
+   # 少ない場合：未使用のDockerイメージ/コンテナを削除
    ```
 
-3. **Check internet connection**:
-   - Build downloads dependencies from internet
-   - Verify connection is stable
+3. **インターネット接続を確認**：
+   - ビルドはインターネットから依存関係をダウンロード
+   - 接続が安定していることを確認
 
-4. **Retry with verbose output**:
+4. **詳細出力で再試行**：
    ```bash
    docker compose build --verbose
-   # Shows more details about what failed
+   # 失敗の詳細を表示
    ```
 
 ---
 
-### ".env file not found" or "Cannot find .env"
+### 「.envファイルが見つかりません」または「.envが見つかりません」
 
-**Symptoms:**
+**症状：**
 ```
 Error: .env file not found
 Error: Cannot read .env
 ```
 
-**Solution:**
+**解決方法：**
 
 ```bash
-# Check if .env exists
+# .envが存在するか確認
 ls -la .env
 
-# If not found, create it:
+# 見つからない場合、作成：
 cp .env.example .env
 
-# Verify it was created
+# 作成されたことを確認
 cat .env
 
-# Edit with your credentials
-nano .env  # or your preferred editor
+# 認証情報で編集
+nano .env  # または好みのエディタ
 ```
 
 ---
 
-### ".env is empty or invalid"
+### 「.envが空または無効です」
 
-**Symptoms:**
+**症状：**
 ```
 Configuration empty
 Variables not loaded
 ```
 
-**Solution:**
+**解決方法：**
 
 ```bash
-# Check file size
+# ファイルサイズを確認
 wc -l .env
-# Should show 4+ lines
+# 4行以上が表示されるはず
 
-# If empty or corrupted, restore from template
+# 空またはが破損している場合、テンプレートから復元
 cat .env.example > .env
 
-# Edit with your values
+# 値で編集
 nano .env
 ```
 
 ---
 
-## Connection problems
+## 接続の問題
 
-### "Could not connect to Dify"
+### 「Difyに接続できません」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Connection refused
 Error: Failed to connect to https://cloud.dify.ai
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Check internet connection**:
+1. **インターネット接続を確認**：
    ```bash
    ping google.com
-   # Should get responses
+   # レスポンスを受け取るべき
    ```
 
-2. **Test connection to Dify**:
+2. **Difyへの接続をテスト**：
    ```bash
-   # For cloud:
+   # クラウドの場合：
    ping cloud.dify.ai
 
-   # For self-hosted:
+   # 自己ホスト型の場合：
    ping your-server-ip
    ```
 
-3. **Verify URL in .env**:
+3. **.envのURLを確認**：
    ```bash
    grep DIFY_BASE_URL .env
-   # Should show: DIFY_BASE_URL=https://cloud.dify.ai
-   # (or your self-hosted URL)
+   # 表示例：DIFY_BASE_URL=https://cloud.dify.ai
+   # （または自己ホスト型のURL）
    ```
 
-4. **Check DNS resolution**:
+4. **DNS解決を確認**：
    ```bash
    nslookup cloud.dify.ai
-   # Should show IP addresses
+   # IPアドレスが表示されるべき
    ```
 
 ---
 
-### "Connection timeout"
+### 「接続タイムアウト」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Connection timed out
 Error: Timed out connecting to server
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Increase timeout** in `.env`:
+1. **`.env`でタイムアウトを増加**：
    ```bash
-   # Add or modify
+   # 追加または変更
    CONNECTION_TIMEOUT=30
    REQUEST_TIMEOUT=60
    ```
 
-2. **Check for firewall**:
-   - May be blocking port 443 (HTTPS)
-   - For self-hosted: check port 5001
+2. **ファイアウォールを確認**：
+   - ポート443（HTTPS）をブロックしている可能性
+   - 自己ホスト型：ポート5001を確認
 
-3. **Check network/proxy**:
-   - Corporate firewall?
-   - Proxy required?
-   - Try connecting from different network
+3. **ネットワーク/プロキシを確認**：
+   - 企業ファイアウォール？
+   - プロキシが必要？
+   - 異なるネットワークから接続を試す
 
-4. **Verify server is running**:
-   - For self-hosted: Is Dify running?
-   - Check: `curl http://your-server:5001`
+4. **サーバーが実行されていることを確認**：
+   - 自己ホスト型：Difyが実行されているか？
+   - 確認：`curl http://your-server:5001`
 
 ---
 
-### "SSL certificate error"
+### 「SSL証明書エラー」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Certificate verification failed
 Error: SSL: CERTIFICATE_VERIFY_FAILED
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **For self-signed certificates** (development only):
+1. **自己署名証明書用**（開発のみ）：
    ```bash
-   # Edit .env
+   # .envを編集
    DIFY_VERIFY_SSL=false
    ```
 
-2. **For real certificates**:
-   - Verify certificate is valid and not expired
-   - Check certificate chains
-   - Update system certificates
+2. **実際の証明書の場合**：
+   - 証明書が有効で有効期限が切れていないことを確認
+   - 証明書チェーンを確認
+   - システム証明書を更新
 
-3. **Test connection ignoring SSL**:
+3. **SSLを無視して接続をテスト**：
    ```bash
-   # For debugging only
+   # デバッグのみ
    curl -k https://your-server:5001
-   # -k ignores SSL errors
+   # -k はSSLエラーを無視
    ```
 
 ---
 
-### "Proxy or firewall blocking"
+### 「プロキシまたはファイアウォールがブロック」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Cannot reach Dify
 Works on different network
 ```
 
-**Solutions:**
+**解決方法：**
 
-1. **Configure proxy** in `.env`:
+1. **`.env`でプロキシを設定**：
    ```bash
    HTTP_PROXY=http://proxy-server:8080
    HTTPS_PROXY=http://proxy-server:8080
    NO_PROXY=localhost,127.0.0.1
    ```
 
-2. **Test with proxy settings**:
+2. **プロキシ設定でテスト**：
    ```bash
    docker compose run --rm dify-creator login
-   # Should now connect through proxy
+   # これでプロキシ経由で接続すべき
    ```
 
-3. **Check with network admin**:
-   - May need to whitelist Dify domain
-   - May require VPN
-   - May need corporate proxy certificate
+3. **ネットワーク管理者に確認**：
+   - Difyドメインをホワイトリスト登録する必要があるかもしれません
+   - VPNが必要かもしれません
+   - 企業プロキシ証明書が必要かもしれません
 
 ---
 
-## File and permission issues
+## ファイルと権限の問題
 
-### "Permission denied" or "Cannot write .env"
+### 「アクセス許可が拒否されました」または「.envに書き込めません」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Permission denied while trying to open '.env'
 ```
 
-**Solution:**
+**解決方法：**
 
 ```bash
-# Check current permissions
+# 現在の権限を確認
 ls -la .env
 
-# Make it readable/writable
+# 読み取り/書き込み可能にする
 chmod 600 .env
 
-# Verify
+# 確認
 ls -la .env
-# Should show: -rw------- (or similar with write permissions)
+# 表示：-rw------- （または書き込み権限付き）
 ```
 
 ---
 
-### "Cannot execute docker compose"
+### 「docker composeを実行できません」
 
-**Symptoms:**
+**症状：**
 ```
 Error: docker-compose: command not found
 Or: docker: 'compose' is not a command
 ```
 
-**Solution:**
+**解決方法：**
 
-1. **Check Docker Compose is installed**:
+1. **Docker Composeがインストールされているか確認**：
    ```bash
    docker compose version
-   # Modern: should work
-   # Old: try `docker-compose` instead
+   # 最新：動作するはず
+   # 古い：代わりに`docker-compose`を試す
    ```
 
-2. **Install Docker Compose** (if needed):
-   - Usually comes with Docker Desktop
-   - For Linux: https://docs.docker.com/compose/install/
+2. **Docker Composeをインストール**（必要に応じて）：
+   - 通常Docker Desktopに付属
+   - Linux：https://docs.docker.com/compose/install/
 
 ---
 
-### "Cannot read docker-compose.yml"
+### 「docker-compose.ymlを読み込めません」
 
-**Symptoms:**
+**症状：**
 ```
 Error: Cannot locate docker-compose.yml
 ```
 
-**Solution:**
+**解決方法：**
 
 ```bash
-# Verify you're in the correct directory
+# 正しいディレクトリにいることを確認
 pwd
-# Should show: /path/to/Dify-Creator
+# 表示：/path/to/Dify-Creator
 
-# Check file exists
+# ファイルが存在するか確認
 ls docker-compose.yml
-# Should exist in current directory
+# 現在のディレクトリに存在するはず
 ```
 
 ---
 
-## Platform-specific issues
+## プラットフォーム固有の問題
 
-### macOS issues
+### macOS問題
 
-**Docker Desktop not starting**:
+**Docker Desktopが起動しない**：
 ```bash
-# Try restarting
+# 再起動を試す
 pkill Docker
 open /Applications/Docker.app
 
-# Check logs
+# ログを確認
 cat ~/Library/Containers/com.docker.docker/data/log/vm/docker.log
 ```
 
-**Permission issues**:
+**権限の問題**：
 ```bash
-# May need sudo
+# sudoが必要かもしれません
 sudo docker compose run --rm dify-creator login
 
-# Or fix permissions
+# または権限を修正
 sudo chown -R $(whoami) .
 ```
 
 ---
 
-### Windows issues
+### Windows問題
 
-**Docker Desktop won't start**:
-1. Check if Hyper-V is enabled
-2. Check if WSL 2 is installed
-3. Restart Docker Desktop from Settings
+**Docker Desktopが起動しない**：
+1. Hyper-Vが有効になっているか確認
+2. WSL 2がインストールされているか確認
+3. 設定からDocker Desktopを再起動
 
-**Path issues**:
-- Use forward slashes in paths: `C:/Users/Name/project`
-- Not backslashes: `C:\Users\Name\project`
+**パスの問題**：
+- パスでフォワードスラッシュを使用：`C:/Users/Name/project`
+- バックスラッシュではなく：`C:\Users\Name\project`
 
-**Terminal issues**:
-- Use PowerShell, not Command Prompt
-- Or use Windows Terminal (preferred)
+**ターミナルの問題**：
+- PowerShellを使用、コマンドプロンプトではなく
+- またはWindows Terminal（推奨）を使用
 
 ---
 
-### Linux issues
+### Linux問題
 
-**Docker daemon permissions**:
+**Dockerデーモン権限**：
 ```bash
-# Add user to docker group
+# ユーザーをdockerグループに追加
 sudo usermod -aG docker $USER
 
-# Apply group changes
+# グループ変更を適用
 newgrp docker
 
-# Verify
+# 確認
 docker ps
-# Should work without sudo now
+# これでsudoなしで動作するべき
 ```
 
-**Firewall issues**:
+**ファイアウォールの問題**：
 ```bash
-# Allow Docker
+# Dockerを許可
 sudo ufw allow 5001
-# (if using ufw)
+# （ufwを使用している場合）
 ```
 
 ---
 
-## Verification checklist
+## 検証チェックリスト
 
-Before declaring setup complete, verify:
+セットアップが完了したと宣言する前に、確認：
 
 ```
-✅ Docker is installed and running
+✅ Dockerがインストールされ実行中
    docker --version
 
-✅ Docker Compose is available
+✅ Docker Composeが利用可能
    docker compose version
 
-✅ .env file exists and has credentials
+✅ .envファイルが存在し認証情報がある
    cat .env | grep DIFY
 
-✅ Connection test passes
+✅ 接続テストが成功
    docker compose run --rm dify-creator login
 
-✅ Sample template validates
+✅ サンプルテンプレートが検証済み
    docker compose run --rm dify-creator validate --dsl examples/templates/1_simple_chatbot.dsl.yml
 
-✅ .env is not in git
+✅ .envがgitにない
    git status | grep .env
-   (should show nothing)
+   （何も表示されないはず）
 ```
 
 ---
 
-## Getting help
+## ヘルプを得る
 
-If you're still stuck:
+まだ動かない場合：
 
-1. **Collect diagnostic information**:
+1. **診断情報を収集**：
    ```bash
-   # System info
+   # システム情報
    uname -a                    # Mac/Linux
    systeminfo                  # Windows
 
-   # Docker info
+   # Docker情報
    docker --version
    docker compose version
    docker ps
 
-   # Setup info
+   # セットアップ情報
    cat .env | grep -v PASSWORD
    docker compose run --rm dify-creator login
    ```
 
-2. **Save the output**:
+2. **出力を保存**：
    ```bash
-   # Redirect to file for easier sharing
+   # 共有しやすいようにファイルにリダイレクト
    docker compose run --rm dify-creator login 2>&1 | tee setup-error.log
    cat setup-error.log
    ```
 
-3. **Share with Claude**:
-   - Describe what you're trying to do
-   - Include the error message
-   - Include system information
-   - Include setup steps you took
+3. **Claudeと共有**：
+   - しようとしていたことを説明
+   - エラーメッセージを含める
+   - システム情報を含める
+   - 実行したセットアップステップを含める
 
 ---
 
-## Quick fix checklist
+## クイック修正チェックリスト
 
-**"It's not working, what do I do?"**
+**「動作しません、どうするんですか？」**
 
-Try these in order:
+次の順序で試してください：
 
-1. ✅ **Restart Docker**: Close Docker Desktop / `sudo systemctl restart docker`
-2. ✅ **Update .env**: Verify credentials are correct
-3. ✅ **Clean rebuild**: `docker compose build --no-cache`
-4. ✅ **Check connection**: `ping cloud.dify.ai` (or your server)
-5. ✅ **Check disk space**: `df -h /` (need 5GB free)
-6. ✅ **Remove old containers**: `docker compose down` then `docker compose up`
+1. ✅ **Dockerを再起動**：Docker Desktopを閉じる / `sudo systemctl restart docker`
+2. ✅ **.envを更新**：認証情報が正しいことを確認
+3. ✅ **クリーンリビルド**：`docker compose build --no-cache`
+4. ✅ **接続を確認**：`ping cloud.dify.ai`（またはサーバー）
+5. ✅ **ディスク容量を確認**：`df -h /`（5GB必要）
+6. ✅ **古いコンテナを削除**：`docker compose down`その後`docker compose up`
 
-If still stuck → collect diagnostics and ask Claude for help.
+それでも動かない → 診断情報を収集してClaudeに助けを求めてください。

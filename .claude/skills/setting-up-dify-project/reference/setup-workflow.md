@@ -1,178 +1,178 @@
-# Setup Workflow Guide
+# セットアップワークフローガイド
 
-Complete step-by-step guide for setting up Dify-Creator.
+Dify-Creatorをセットアップするための完全なステップバイステップガイドです。
 
-## Contents
-- Pre-setup checklist
-- Setup steps
-- Verification
-- Troubleshooting
-- Advanced configuration
+## 目次
+- セットアップ前のチェックリスト
+- セットアップステップ
+- 検証
+- トラブルシューティング
+- 高度な設定
 
 ---
 
-## Pre-setup checklist
+## セットアップ前のチェックリスト
 
-Before starting setup, ensure you have:
+セットアップを開始する前に、以下があることを確認してください：
 
 ```
-Setup Requirements:
-- [ ] Dify account created (cloud.dify.ai or self-hosted)
-- [ ] Dify login email and password
-- [ ] Docker installed (docker --version shows version)
-- [ ] Git repository cloned locally
-- [ ] Terminal/CLI access
-- [ ] Stable internet connection
+セットアップ要件：
+- [ ] Difyアカウントが作成されている（cloud.dify.aiまたは自己ホスト）
+- [ ] Difyログインメールとパスワード
+- [ ] Dockerがインストールされている（docker --versionでバージョンが表示される）
+- [ ] Gitリポジトリがローカルにクローンされている
+- [ ] ターミナル/CLIアクセス
+- [ ] 安定したインターネット接続
 ```
 
-### Quick verification
+### クイック検証
 
 ```bash
-# Check Docker is installed
+# Dockerがインストールされているか確認
 docker --version
-# Should output: Docker version 20.x.x or higher
+# 出力例：Docker version 20.x.x or higher
 
-# Check Git
+# Gitを確認
 git --version
-# Should output: git version 2.x.x or higher
+# 出力例：git version 2.x.x or higher
 ```
 
 ---
 
-## Setup process
+## セットアッププロセス
 
-### Step 1: Gather your information
+### ステップ1：情報を収集
 
-**Dify Cloud (recommended)**:
+**Dify Cloud（推奨）**：
 ```
 URL: https://cloud.dify.ai
-Email: your-email@example.com
-Password: your-dify-password
-SSL verification: Yes (leave default)
+メール：your-email@example.com
+パスワード：your-dify-password
+SSL検証：はい（デフォルトのまま）
 ```
 
-**Self-hosted Dify**:
+**自己ホスト型Dify**：
 ```
 URL: http://your-server-ip:5001
-Email: your-email@example.com
-Password: your-password
-SSL verification: Depends on certificate
+メール：your-email@example.com
+パスワード：your-password
+SSL検証：証明書による
 ```
 
-### Step 2: Run setup
+### ステップ2：セットアップを実行
 
 ```bash
-# Ask Claude to set up the project:
+# Claudeにプロジェクトをセットアップするよう依頼：
 /setting-up-dify-project
 ```
 
-Or manually:
+または手動で：
 
 ```bash
-# Create .env from template (if it doesn't exist)
+# テンプレートから.envを作成（存在しない場合）
 test -f .env || cp .env.example .env
 
-# Edit .env with your credentials
-# (see values below)
+# .envを認証情報で編集
+# （下記の値を参照）
 ```
 
-### Step 3: Provide configuration
+### ステップ3：設定を提供
 
-Claude will ask for:
+Claudeが以下を求めます：
 
 1. **Dify URL**
-   - Cloud: `https://cloud.dify.ai` (default)
-   - Self-hosted: `http://your-server:5001`
+   - クラウド：`https://cloud.dify.ai`（デフォルト）
+   - 自己ホスト型：`http://your-server:5001`
 
-2. **Email**
-   - Your Dify account email
-   - Example: `user@example.com`
+2. **メール**
+   - Difyアカウントメール
+   - 例：`user@example.com`
 
-3. **Password**
-   - Your Dify account password
-   - Keep it secure in `.env`
+3. **パスワード**
+   - Difyアカウントパスワード
+   - `.env`で安全に保管
 
-4. **SSL Verification** (for self-hosted)
-   - `true` for valid SSL certificates (recommended)
-   - `false` for self-signed certificates
+4. **SSL検証**（自己ホスト型の場合）
+   - `true`有効なSSL証明書用（推奨）
+   - `false`自己署名証明書用
 
-### Step 4: Automatic configuration
+### ステップ4：自動設定
 
-Claude sets up:
+Claudeがセットアップ：
 
 ```bash
-# 1. Create/update .env file
+# 1. .envファイルを作成/更新
 DIFY_BASE_URL=https://cloud.dify.ai
 DIFY_EMAIL=your-email@example.com
 DIFY_PASSWORD=your-password
 DIFY_VERIFY_SSL=true
 
-# 2. Build Docker image
+# 2. Dockerイメージをビルド
 docker compose build
 
-# 3. Test connection
+# 3. 接続をテスト
 docker compose run --rm dify-creator login
 
-# 4. Show success message
-# Setup complete! You're ready to create apps.
+# 4. 成功メッセージを表示
+# セットアップ完了！アプリを作成する準備ができました。
 ```
 
-### Step 5: Verify setup
+### ステップ5：セットアップを検証
 
-Success looks like:
+成功は次のようになります：
 
 ```
-✅ Configuration created
-✅ Docker image built
-✅ Connection test passed
-✅ Ready to create apps
+✅ 設定が作成されました
+✅ Dockerイメージがビルドされました
+✅ 接続テストが成功しました
+✅ アプリ作成の準備ができました
 ```
 
 ---
 
-## After successful setup
+## セットアップ成功後
 
-### Test that everything works
+### すべてが機能するかテスト
 
 ```bash
-# Test login (should succeed silently)
+# ログインをテスト（静かに成功するはず）
 docker compose run --rm dify-creator login
 
-# If successful, no error message shown
-# If failed, you'll see an error—report it
+# 成功した場合、エラーメッセージは表示されません
+# 失敗した場合、エラーが表示されます。報告してください
 ```
 
-### What's been created
+### 作成されたもの
 
 ```
-.env                          # Your credentials (DO NOT COMMIT TO GIT)
-(docker image)                # Built and ready to use
-.docker/               # Docker files (created if needed)
+.env                          # 認証情報（Gitにコミットしないこと）
+（dockerイメージ）            # ビルドされ使用準備完了
+.docker/                      # Dockerファイル（必要に応じて作成）
 ```
 
-### Ready to use
+### 使用準備完了
 
-You can now:
-- Create new Dify apps: `/managing-dify-apps`
-- Edit existing apps: `/managing-dify-apps`
-- Manage your project
+これでできるようになります：
+- 新しいDifyアプリを作成：`/managing-dify-apps`
+- 既存のアプリを編集：`/managing-dify-apps`
+- プロジェクトを管理
 
 ---
 
-## Detailed configuration options
+## 詳細設定オプション
 
-### `.env` file
+### `.env`ファイル
 
-The setup creates `.env` with these variables:
+セットアップはこれらの変数を持つ`.env`を作成します：
 
-| Variable | Meaning | Example |
+| 変数 | 意味 | 例 |
 |----------|---------|---------|
-| `DIFY_BASE_URL` | Dify server address | `https://cloud.dify.ai` |
-| `DIFY_EMAIL` | Your Dify account email | `user@example.com` |
-| `DIFY_PASSWORD` | Your Dify password | `your-secure-password` |
-| `DIFY_VERIFY_SSL` | Verify SSL certificates | `true` or `false` |
+| `DIFY_BASE_URL` | Difyサーバーアドレス | `https://cloud.dify.ai` |
+| `DIFY_EMAIL` | Difyアカウントメール | `user@example.com` |
+| `DIFY_PASSWORD` | Difyパスワード | `your-secure-password` |
+| `DIFY_VERIFY_SSL` | SSL証明書を検証 | `true`または`false` |
 
-### For Dify Cloud
+### Dify Cloudの場合
 
 ```env
 DIFY_BASE_URL=https://cloud.dify.ai
@@ -181,7 +181,7 @@ DIFY_PASSWORD=your-password
 DIFY_VERIFY_SSL=true
 ```
 
-### For self-hosted with valid SSL
+### 有効なSSL付きの自己ホスト型
 
 ```env
 DIFY_BASE_URL=https://your-domain.com:5001
@@ -190,7 +190,7 @@ DIFY_PASSWORD=your-password
 DIFY_VERIFY_SSL=true
 ```
 
-### For self-hosted with self-signed certificate
+### 自己署名証明書を持つ自己ホスト型
 
 ```env
 DIFY_BASE_URL=https://your-domain.com:5001
@@ -199,7 +199,7 @@ DIFY_PASSWORD=your-password
 DIFY_VERIFY_SSL=false
 ```
 
-### For local development
+### ローカル開発の場合
 
 ```env
 DIFY_BASE_URL=http://localhost:5001
@@ -210,200 +210,200 @@ DIFY_VERIFY_SSL=false
 
 ---
 
-## Verification steps
+## 検証ステップ
 
-### Step 1: Check .env exists
+### ステップ1：.envが存在するか確認
 
 ```bash
-# File should exist and not be empty
+# ファイルが存在し、空でない必要があります
 test -f .env && wc -l .env
-# Output: 4 .env (or similar)
+# 出力例：4 .env（または同様）
 ```
 
-### Step 2: Verify connection
+### ステップ2：接続を確認
 
 ```bash
-# This should succeed without errors
+# これはエラーなしで成功するはず
 docker compose run --rm dify-creator login
 
-# Success: No output or "Login successful"
-# Failure: Error message about credentials or connection
+# 成功：出力なしまたは「ログイン成功」
+# 失敗：認証情報または接続に関するエラーメッセージ
 ```
 
-### Step 3: Check Docker image
+### ステップ3：Dockerイメージを確認
 
 ```bash
-# Docker image should be available
+# Dockerイメージが利用可能である必要があります
 docker images | grep dify-creator
-# Should show the image listed
+# イメージがリストされているはず
 ```
 
-### Step 4: Run a test
+### ステップ4：テストを実行
 
-After completing other setup steps:
+その他のセットアップステップを完了した後：
 
 ```bash
-# This validates the entire setup
+# セットアップ全体を検証
 docker compose run --rm dify-creator validate --dsl examples/templates/1_simple_chatbot.dsl.yml
-# Should output: ✅ Validation successful
+# 出力：✅ 検証成功
 ```
 
 ---
 
-## Troubleshooting setup
+## セットアップのトラブルシューティング
 
-### "Could not find .env" or ".env is empty"
+### 「.envが見つかりません」または「.envが空です」
 
-**Problem**: Configuration file is missing.
+**問題**：設定ファイルが見つかりません。
 
-**Solution**:
+**解決方法**：
 ```bash
-# Create from template
+# テンプレートから作成
 cp .env.example .env
 
-# Edit with your credentials
-nano .env  # (or your preferred editor)
+# 認証情報で編集
+nano .env  # （または好みのエディタ）
 
-# Verify
+# 確認
 cat .env
 ```
 
-### "Docker is not installed"
+### 「Dockerがインストールされていません」
 
-**Problem**: Docker command not found.
+**問題**：Dockerコマンドが見つかりません。
 
-**Solution**:
-1. Install Docker Desktop or Docker Engine
+**解決方法**：
+1. Docker DesktopまたはDocker Engineをインストール
    - Mac: https://docs.docker.com/desktop/install/mac-install/
    - Windows: https://docs.docker.com/desktop/install/windows-install/
    - Linux: https://docs.docker.com/engine/install/
 
-2. Verify installation:
+2. インストールを確認：
    ```bash
    docker --version
    ```
 
-### "Authentication failed" or "Login error"
+### 「認証失敗」または「ログインエラー」
 
-**Problem**: Credentials are incorrect or account doesn't exist.
+**問題**：認証情報が誤っているか、アカウントが存在しません。
 
-**Solutions**:
+**解決方法**：
 
-1. **Verify credentials**:
-   - Is the email correct? (should be your account login email)
-   - Is the password correct? (check caps lock, special characters)
-   - Has password been changed recently?
+1. **認証情報を確認**：
+   - メールは正しいですか？（アカウントログインメールである必要があります）
+   - パスワードは正しいですか？（キャップスロック、特殊文字を確認）
+   - パスワードは最近変更されていますか？
 
-2. **Test credentials manually**:
-   - Log into Dify web UI (https://cloud.dify.ai)
-   - Confirm email/password work there
+2. **認証情報を手動でテスト**：
+   - Dify web UIにログイン（https://cloud.dify.ai）
+   - メール/パスワードがそこで機能することを確認
 
-3. **Update .env**:
+3. **.envを更新**：
    ```bash
    nano .env
-   # Fix DIFY_EMAIL and DIFY_PASSWORD
+   # DIFY_EMAIL と DIFY_PASSWORD を修正
    ```
 
-4. **Retry login**:
+4. **ログインを再試行**：
    ```bash
    docker compose run --rm dify-creator login
    ```
 
-### "Connection timeout" or "Cannot reach server"
+### 「接続タイムアウト」または「サーバーに到達できません」
 
-**Problem**: Cannot connect to Dify server.
+**問題**：Difyサーバーに接続できません。
 
-**Solutions**:
+**解決方法**：
 
-1. **Check internet connection**:
+1. **インターネット接続を確認**：
    ```bash
-   ping cloud.dify.ai  # For cloud version
-   # Should return responses
+   ping cloud.dify.ai  # クラウド版の場合
+   # レスポンスを返す必要があります
    ```
 
-2. **Verify URL in .env**:
+2. **.envのURLを確認**：
    ```bash
    grep DIFY_BASE_URL .env
-   # Should show correct URL
+   # 正しいURLが表示されるはず
    ```
 
-3. **For self-hosted Dify**:
-   - Is the server running?
-   - Is the URL correct and accessible?
-   - Test in browser: `http://your-server:5001`
+3. **自己ホスト型Difyの場合**：
+   - サーバーは実行されていますか？
+   - URLは正しく、アクセス可能ですか？
+   - ブラウザでテスト：`http://your-server:5001`
 
-4. **Firewall/proxy issues**:
-   - Check if firewall blocks the connection
-   - Check if corporate proxy needs configuration
+4. **ファイアウォール/プロキシの問題**：
+   - ファイアウォールが接続をブロックしているか確認
+   - 企業プロキシの設定が必要か確認
 
-### "Docker build failed"
+### 「Dockerビルド失敗」
 
-**Problem**: Docker image build encountered an error.
+**問題**：Dockerイメージビルドがエラーに遭遇しました。
 
-**Solutions**:
+**解決方法**：
 
-1. **Check Docker daemon**:
+1. **Dockerデーモンを確認**：
    ```bash
    docker ps
-   # If error, Docker daemon isn't running
+   # エラーが出た場合、Dockerデーモンが実行されていません
    ```
 
-2. **Retry build**:
+2. **ビルドを再試行**：
    ```bash
    docker compose build --no-cache
    ```
 
-3. **Check disk space**:
+3. **ディスク容量を確認**：
    ```bash
    df -h /
-   # Need at least 5GB free
+   # 最低5GB空いている必要があります
    ```
 
-### "Port already in use"
+### 「ポートが既に使用中」
 
-**Problem**: Docker can't bind to required port.
+**問題**：Dockerが必要なポートにバインドできません。
 
-**Solutions**:
+**解決方法**：
 
-1. **Find process using port**:
+1. **ポートを使用しているプロセスを検出**：
    ```bash
-   # On Mac/Linux:
+   # Mac/Linuxの場合：
    lsof -i :5001
 
-   # On Windows:
+   # Windowsの場合：
    netstat -ano | findstr :5001
    ```
 
-2. **Change port** in `docker-compose.yml`:
+2. **`docker-compose.yml`のポートを変更**：
    ```yaml
    services:
      dify-creator:
        ports:
-         - "5002:5001"  # Changed from 5001 to 5002
+         - "5002:5001"  # 5001から5002に変更
    ```
 
 ---
 
-## Advanced configuration
+## 高度な設定
 
-### Multiple environments
+### 複数の環境
 
-If you need to manage multiple Dify instances:
+複数のDifyインスタンスを管理する必要がある場合：
 
 ```bash
-# Create separate .env files
-.env.cloud          # Cloud instance
-.env.local          # Local development
-.env.staging        # Staging server
+# 別々の.envファイルを作成
+.env.cloud          # クラウドインスタンス
+.env.local          # ローカル開発
+.env.staging        # ステージングサーバー
 
-# Load specific environment
+# 特定の環境をロード
 DIFY_ENV_FILE=.env.staging docker compose run --rm dify-creator login
 ```
 
-### Using environment variables instead of .env
+### .envの代わりに環境変数を使用
 
 ```bash
-# Set variables directly (takes precedence over .env)
+# 変数を直接設定（.envより優先）
 export DIFY_BASE_URL=https://cloud.dify.ai
 export DIFY_EMAIL=user@example.com
 export DIFY_PASSWORD=password
@@ -411,12 +411,12 @@ export DIFY_PASSWORD=password
 docker compose run --rm dify-creator login
 ```
 
-### Proxy configuration
+### プロキシ設定
 
-If behind a corporate proxy:
+企業プロキシの背後にある場合：
 
 ```bash
-# Add to .env
+# .envに追加
 HTTP_PROXY=http://proxy-server:port
 HTTPS_PROXY=http://proxy-server:port
 NO_PROXY=localhost,127.0.0.1
@@ -424,95 +424,95 @@ NO_PROXY=localhost,127.0.0.1
 
 ---
 
-## Security best practices
+## セキュリティベストプラクティス
 
-✅ **DO:**
-- Keep `.env` file secure (never commit to Git)
-- Use strong passwords
-- Rotate passwords periodically
-- Add `.env` to `.gitignore` (should already be done)
-- Use HTTPS for Dify URL when possible
-- Verify SSL certificates
+✅ **すべきこと：**
+- `.env`ファイルを安全に保管（Gitにコミットしない）
+- 強力なパスワードを使用
+- パスワードを定期的にローテーション
+- `.env`を`.gitignore`に追加（すでに実行されているはず）
+- 可能な場合Dify URLにHTTPSを使用
+- SSL証明書を検証
 
-❌ **DON'T:**
-- Share `.env` file with others
-- Commit `.env` to version control
-- Use easily guessable passwords
-- Leave default credentials in production
-- Disable SSL verification unless necessary (self-signed certs only)
+❌ **してはいけないこと：**
+- `.env`ファイルを他人と共有
+- `.env`をバージョン管理にコミット
+- 簡単に推測できるパスワードを使用
+- プロダクション環境でデフォルト認証情報を残す
+- SSL検証を無効にする（必要な場合のみ：自己署名証明書）
 
 ---
 
-## Verifying security
+## セキュリティの確認
 
 ```bash
-# Verify .env is in .gitignore
+# .envが.gitignoreにあるか確認
 grep .env .gitignore
-# Should output: .env
+# 出力：.env
 
-# Verify .env won't be committed
+# .envがコミットされないか確認
 git status
-# Should NOT show .env in changes
+# 変更内容に.envが表示されない必要があります
 ```
 
 ---
 
-## Resetting setup
+## セットアップをリセット
 
-If you need to start over:
+最初からやり直す必要がある場合：
 
 ```bash
-# Option 1: Update credentials
+# オプション1：認証情報を更新
 nano .env
-# Edit DIFY_EMAIL and DIFY_PASSWORD
+# DIFY_EMAIL と DIFY_PASSWORD を編集
 
-# Option 2: Rebuild Docker image
+# オプション2：Dockerイメージを再ビルド
 docker compose down
 docker compose build --no-cache
 
-# Option 3: Start completely fresh
+# オプション3：完全にリセット
 rm .env
 rm -rf .docker
-# Then run setup again
+# その後セットアップを再実行
 ```
 
 ---
 
-## Getting help
+## ヘルプを得る
 
-If setup still fails:
+セットアップがまだ失敗する場合：
 
-1. **Collect error messages**:
+1. **エラーメッセージを収集**：
    ```bash
    docker compose run --rm dify-creator login 2>&1 | tee setup-error.log
    ```
 
-2. **Check logs**:
+2. **ログをチェック**：
    ```bash
    cat setup-error.log
    ```
 
-3. **Share the error** with Claude along with:
-   - Your error message
-   - What you were trying to do
-   - Your system (Mac/Windows/Linux)
-   - Dify version (if self-hosted)
+3. **エラーをClaudeと共有**：
+   - エラーメッセージ
+   - しようとしていたこと
+   - システム（Mac/Windows/Linux）
+   - Difyバージョン（自己ホスト型の場合）
 
 ---
 
-## Next steps after setup
+## セットアップ後の次のステップ
 
-Once setup is complete:
+セットアップが完了したら：
 
-1. **Create your first app**:
-   - Use `/managing-dify-apps`
-   - Choose a template
-   - Create and test your app
+1. **最初のアプリを作成**：
+   - `/managing-dify-apps`を使用
+   - テンプレートを選択
+   - アプリを作成してテスト
 
-2. **Verify connection works** by creating a test app
+2. **テストアプリを作成して接続が機能することを確認**
 
-3. **Learn about templates**:
-   - See [../managing-dify-apps/reference/templates.md](../managing-dify-apps/reference/templates.md)
+3. **テンプレートについて学ぶ**：
+   - [../managing-dify-apps/reference/templates.md](../managing-dify-apps/reference/templates.md)を参照
 
-4. **Explore workflows**:
-   - See [../managing-dify-apps/reference/workflows.md](../managing-dify-apps/reference/workflows.md)
+4. **ワークフローを調査**：
+   - [../managing-dify-apps/reference/workflows.md](../managing-dify-apps/reference/workflows.md)を参照

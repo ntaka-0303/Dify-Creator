@@ -1,21 +1,21 @@
-# DSL Configuration Guide
+# DSL 設定ガイド
 
-Quick reference for Dify DSL (Domain Specific Language) configuration structure.
+Dify DSL（ドメイン固有言語）設定構造の簡単なリファレンスです。
 
-## Overview
+## 概要
 
-Dify apps are defined in YAML format (DSL version 0.5.0). Each app requires:
-- **Basic metadata**: name, description, icon
-- **Mode selection**: chat, workflow, or agent
-- **Configuration**: model settings (chat) or workflow nodes (workflow)
+DifyアプリはYAML形式で定義されます（DSLバージョン 0.5.0）。各アプリは以下を必要とします：
+- **基本メタデータ**: name、description、icon
+- **モード選択**: chat、workflow、またはagent
+- **設定**: モデル設定（chat）またはワークフローノード（workflow）
 
-For complete technical details, see [DSL_SPECIFICATION.md](../../docs/DSL_SPECIFICATION.md).
+詳細な技術仕様については、[DSL_SPECIFICATION.md](../../docs/DSL_SPECIFICATION.md)を参照してください。
 
 ---
 
-## Basic structure
+## 基本構造
 
-Every Dify app follows this structure:
+すべてのDifyアプリは次の構造に従います：
 
 ```yaml
 version: "0.5.0"
@@ -52,9 +52,9 @@ workflow:
 
 ---
 
-## Mode selection
+## モード選択
 
-### Chat mode
+### チャットモード
 ```yaml
 app:
   mode: "chat"
@@ -68,9 +68,9 @@ model_config:
     max_tokens: 2048
 ```
 
-**Use for:** Q&A, conversational interaction
+**用途：** Q&A、対話型インタラクション
 
-### Workflow mode
+### ワークフローモード
 ```yaml
 app:
   mode: "workflow"
@@ -85,9 +85,9 @@ workflow:
       type: "end"
 ```
 
-**Use for:** Multi-step processes, complex logic, API integration
+**用途：** マルチステップ処理、複雑なロジック、API統合
 
-### Agent mode
+### エージェントモード
 ```yaml
 app:
   mode: "agent"
@@ -95,13 +95,13 @@ model_config:
   # Similar to chat, but with agent-specific configuration
 ```
 
-**Use for:** Autonomous agents with tool use
+**用途：** ツール使用を伴う自律エージェント
 
 ---
 
-## Common configuration patterns
+## 一般的な設定パターン
 
-### Chat app with variables
+### 変数付きチャットアプリ
 
 ```yaml
 model_config:
@@ -122,7 +122,7 @@ model_config:
     temperature: 0.7
 ```
 
-### Workflow with multiple steps
+### 複数ステップを含むワークフロー
 
 ```yaml
 workflow:
@@ -151,7 +151,7 @@ workflow:
         result: "${analyze.output}"
 ```
 
-### Workflow with conditional branching
+### 条件分岐を含むワークフロー
 
 ```yaml
 nodes:
@@ -177,9 +177,9 @@ nodes:
 
 ---
 
-## Key sections reference
+## キーセクションリファレンス
 
-### `metadata` section
+### `metadata` セクション
 ```yaml
 metadata:
   name: "Display Name"
@@ -188,7 +188,7 @@ metadata:
   icon_background: "#hexcolor"
 ```
 
-### `model_config` section (Chat/Agent modes)
+### `model_config` セクション（チャット/エージェントモード）
 ```yaml
 model_config:
   opening_statement: "Initial greeting message"
@@ -205,7 +205,7 @@ model_config:
   knowledge_bases: []         # Knowledge bases (if any)
 ```
 
-### `workflow` section (Workflow mode)
+### `workflow` セクション（ワークフローモード）
 ```yaml
 workflow:
   variable_pool:              # Global variables
@@ -220,49 +220,49 @@ workflow:
         # Type-specific configuration
 ```
 
-### Node types in workflows
+### ワークフロー内のノードタイプ
 
-| Type | Purpose | Key fields |
+| タイプ | 目的 | キーフィールド |
 |------|---------|-----------|
-| `start` | Workflow entry point | `data: [input definitions]` |
-| `llm` | Call language model | `system_prompt`, `model`, `input_mapping` |
-| `if` | Conditional branching | `condition`, branches |
-| `http_request` | Call external API | `method`, `url`, `headers`, `body` |
-| `text_processing` | Manipulate text | `operation`, `input_mapping` |
-| `code` | Execute code | `language`, `code`, `input_mapping` |
-| `end` | Workflow output | `output_mapping` |
+| `start` | ワークフロー入口 | `data: [入力定義]` |
+| `llm` | 言語モデルの呼び出し | `system_prompt`、`model`、`input_mapping` |
+| `if` | 条件分岐 | `condition`、branches |
+| `http_request` | 外部API呼び出し | `method`、`url`、`headers`、`body` |
+| `text_processing` | テキスト操作 | `operation`、`input_mapping` |
+| `code` | コード実行 | `language`、`code`、`input_mapping` |
+| `end` | ワークフロー出力 | `output_mapping` |
 
 ---
 
-## Model configuration details
+## モデル設定の詳細
 
-### Temperature settings
+### 温度設定
 
 ```yaml
 model:
   temperature: 0.7
 ```
 
-| Value | Behavior | Best for |
+| 値 | 動作 | 適している用途 |
 |-------|----------|----------|
-| 0.0 | Deterministic, consistent | Q&A, fact-based responses |
-| 0.3-0.5 | Focused with some variety | Customer support, structured output |
-| 0.7 | Balanced (default) | General conversational use |
-| 0.9-1.0 | Creative, diverse | Creative writing, brainstorming |
+| 0.0 | 決定的、一貫性あり | Q&A、事実ベースの回答 |
+| 0.3-0.5 | 焦点化されて多少の多様性 | カスタマーサポート、構造化出力 |
+| 0.7 | バランス型（デフォルト） | 一般的な対話的使用 |
+| 0.9-1.0 | 創造的、多様性あり | クリエイティブライティング、ブレーンストーミング |
 
-### Max tokens
+### 最大トークン
 
 ```yaml
 model:
   max_tokens: 2048
 ```
 
-**Guidelines:**
-- Customer support: 512-1024
-- Analysis/Summary: 1024-2048
-- Creative content: 2048-4096
+**ガイドライン：**
+- カスタマーサポート：512-1024
+- 分析/要約：1024-2048
+- クリエイティブコンテンツ：2048-4096
 
-### Prompt variables
+### プロンプト変数
 
 ```yaml
 prompt_variables:
@@ -272,7 +272,7 @@ prompt_variables:
     type: "number"
 ```
 
-Usage in prompts:
+プロンプト内での使用：
 ```yaml
 system_prompt: |
   Customer tier: {customer_tier}
@@ -282,9 +282,9 @@ system_prompt: |
 
 ---
 
-## Input/Output schemas
+## 入出力スキーマ
 
-### Define inputs (Chat mode)
+### 入力を定義（チャットモード）
 
 ```yaml
 model_config:
@@ -299,7 +299,7 @@ model_config:
       description: "AI response"
 ```
 
-### Define inputs (Workflow mode)
+### 入力を定義（ワークフローモード）
 
 ```yaml
 workflow:
@@ -317,9 +317,9 @@ workflow:
 
 ---
 
-## Validation checklist
+## 検証チェックリスト
 
-Before deploying, verify:
+デプロイ前に確認：
 
 ```
 ✅ version is "0.5.0"
@@ -335,54 +335,54 @@ Before deploying, verify:
 ✅ YAML syntax is valid (no indentation errors)
 ```
 
-Run validation:
+検証を実行：
 ```bash
 docker compose run --rm dify-creator validate --dsl app.dsl.yml
 ```
 
 ---
 
-## Common errors and fixes
+## よくあるエラーと修正
 
-### Error: Required field missing
+### エラー：必須フィールドが見つかりません
 
 ```
 Error: Required field 'workflow' not found
 ```
 
-**Fix:** Check your `app.mode`. If it's "workflow", you must have a `workflow` section.
+**修正：** `app.mode`を確認してください。「workflow」の場合は、`workflow`セクションが必須です。
 
-### Error: Invalid mode
+### エラー：無効なモード
 
 ```
 Error: 'app.mode' must be one of: workflow, chat, agent
 ```
 
-**Fix:** Check spelling—mode values are lowercase only.
+**修正：** スペルを確認してください。モード値は小文字のみです。
 
-### Error: Node not found
+### エラー：ノードが見つかりません
 
 ```
 Error: Reference to undefined node 'process_step'
 ```
 
-**Fix:** Check node ID spelling in references. They're case-sensitive.
+**修正：** リファレンス内のノードID表記を確認してください。大文字小文字を区別します。
 
-### Error: Syntax error in YAML
+### エラー：YAMLの構文エラー
 
 ```
 Error: Unexpected indent at line 42
 ```
 
-**Fix:** YAML indentation must be consistent (usually 2 spaces). Check alignment.
+**修正：** YAMLインデントは一貫している必要があります（通常2スペース）。配置を確認してください。
 
 ---
 
-## For more information
+## 詳細情報
 
-- [Full DSL Specification](../../docs/DSL_SPECIFICATION.md)
-- [Template Examples](templates.md)
-- [Workflow Guide](workflows.md)
-- [Dify Official Documentation](https://docs.dify.ai/)
+- [完全なDSL仕様](../../docs/DSL_SPECIFICATION.md)
+- [テンプレート例](templates.md)
+- [ワークフローガイド](workflows.md)
+- [Dify公式ドキュメント](https://docs.dify.ai/)
 
-For most users, the templates in [templates.md](templates.md) provide all necessary structure. Copy a template and customize—no need to build from scratch.
+ほとんどのユーザーにとって、[templates.md](templates.md)のテンプレートは必要なすべての構造を提供しています。テンプレートをコピーしてカスタマイズします。最初から構築する必要はありません。
