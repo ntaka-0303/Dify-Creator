@@ -35,7 +35,7 @@ description: Difyアプリの作成・編集・検証・デプロイを自動化
 
 ## コアワークフロー
 
-詳細は [reference/workflows.md](reference/workflows.md) を参照：
+詳細は [reference/core/workflows.md](reference/core/workflows.md) を参照：
 - 異なるタイプのアプリ作成
 - 既存アプリの編集と反復改善
 - 検証とエラーハンドリング
@@ -44,13 +44,23 @@ description: Difyアプリの作成・編集・検証・デプロイを自動化
 ## 主要リソース
 
 **テンプレートと例**：
-[reference/templates.md](reference/templates.md) を参照：
+[reference/technical/templates.md](reference/technical/templates.md) を参照：
 - 利用可能なDSLテンプレート5つ
 - 各テンプレートの使い分け
 - テンプレート構造とカスタマイズ方法
 
+**実際のテンプレートファイル**：
+- `examples/templates/1_simple_chatbot.dsl.yml` - Q&Aチャットボット
+- `examples/templates/2_echo_workflow.dsl.yml` - シンプルワークフロー
+- `examples/templates/3_llm_workflow.dsl.yml` - 標準ワークフロー
+- `examples/templates/4_conditional_workflow.dsl.yml` - 条件分岐ロジック
+- `examples/templates/5_http_api_workflow.dsl.yml` - API連携
+
+**テスト用サンプル入力**：
+- `examples/inputs.json` - アプリのテスト実行用サンプルデータ
+
 **DSL設定**：
-[reference/dsl-guide.md](reference/dsl-guide.md) を参照：
+[reference/technical/dsl-guide.md](reference/technical/dsl-guide.md) を参照：
 - DSL YAML構造の概要
 - 必須フィールドとセクション
 - よくある設定パターン
@@ -74,6 +84,36 @@ description: Difyアプリの作成・編集・検証・デプロイを自動化
 
 エラーメッセージは具体的な問題を指摘するので、修正が簡単です。
 
+## 自動化スクリプト
+
+このSkillは以下のスクリプトを使って検証とテストを自動実行します：
+
+**検証スクリプト**：
+```bash
+bash scripts/run-validation.sh app.dsl.yml
+```
+- DSL YAMLの構文と構造を検証
+- エラーがあれば詳細なメッセージを返す
+- 実装の詳細: [scripts/run-validation.sh](scripts/run-validation.sh)
+
+**接続テスト**：
+```bash
+bash scripts/test-connection.sh
+```
+- Difyサーバーへの接続を確認
+- 認証情報が正しいかを検証
+- 実装の詳細: [scripts/test-connection.sh](scripts/test-connection.sh)
+
+**テスト実行**：
+```bash
+bash scripts/run-test-inputs.sh <app-id>
+```
+- `examples/inputs.json`のサンプルデータでアプリをテスト
+- 実際の出力を確認
+- 実装の詳細: [scripts/run-test-inputs.sh](scripts/run-test-inputs.sh)
+
+これらのスクリプトはSkillが自動的に実行するため、手動で実行する必要はありません。
+
 ## サポートするアプリタイプ
 
 - **Q&Aチャットボット**: シンプルな質問応答
@@ -81,7 +121,7 @@ description: Difyアプリの作成・編集・検証・デプロイを自動化
 - **条件分岐ロジック**: 判定分岐とルーティング
 - **API連携**: 外部サービスとの連携
 
-詳細は [reference/templates.md](reference/templates.md) を参照。
+詳細は [reference/technical/templates.md](reference/technical/templates.md) を参照。
 
 ## 使う前に確認すること
 

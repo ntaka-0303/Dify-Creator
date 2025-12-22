@@ -56,6 +56,21 @@ See [reference/setup-workflow.md](reference/setup-workflow.md) for:
 - Configuration options
 - Verifying successful setup
 
+## Automation scripts
+
+This Skill uses the following script to verify your setup:
+
+**Setup verification**:
+```bash
+bash scripts/verify-setup.sh
+```
+- Tests connection to Dify server
+- Validates credentials
+- Confirms Docker environment is ready
+- Implementation details: [scripts/verify-setup.sh](scripts/verify-setup.sh)
+
+The Skill runs this automatically during setup - no need to run it manually.
+
 ## After setup
 
 Once setup is complete, you can use the `managing-dify-apps` Skill to:
