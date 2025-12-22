@@ -1,5 +1,13 @@
 # dify-import（Difyにアプリをアップロード）
 
+⚠️ **[重要] このコマンドは以下のSkillに統合されました：**
+
+> **新しいSkill: [`managing-dify-apps`](./../skills/managing-dify-apps/SKILL.md)**
+>
+> このコマンドはエージェント内部で自動的に使用されます。
+
+---
+
 **（主にエージェント内部で使用。ユーザーは `/dify-new-app` または `/dify-edit-app` を使ってください）**
 
 `app.dsl.yml` を Dify にアップロードします（app_id 指定で上書き）。

@@ -1,8 +1,8 @@
 # Dify-Creator：Difyアプリを簡単に作成・編集するツール
 
-**ClaudeCode のコマンド（Commands）を選ぶだけで、ブラウザを開かずにDifyアプリを作ったり修正したりできます。**
+**ClaudeCode のSkillsを使って、ブラウザを開かずにDifyアプリを作ったり修正したりできます。**
 
-> **✨ 最新版の特徴：** ターミナルコマンド不要。ClaudeCode に「どんなアプリを作りたいか」説明するだけで、ClaudeCode が YAML 生成・Dify 登録・テスト実行をすべて自動で行います。
+> **✨ 最新版の特徴（v0.3.0）：** Agent-Skillsベストプラクティスに準拠した新しいSkill構造で、より効率的でメンテナンスしやすくなりました。ClaudeCode に「どんなアプリを作りたいか」説明するだけで、YAML 生成・Dify 登録・テスト実行をすべて自動で行います。
 
 ---
 
@@ -36,16 +36,21 @@ ClaudeCode が自動で修正・テスト
 
 ## 🚀 最初の1回だけ：初期化
 
-### ステップ1：ClaudeCode で `/dify-setup` を実行
+### 使用する Skill：`setting-up-dify-project`
 
-チャット画面で `/` を入力して、`dify-setup` を選んでください。
+新しいSkill構造に基づいて、以下を実行します：
 
-または直接：
 ```
-/dify-setup
+チャットで `setting-up-dify-project` を選ぶ
+    ↓
+情報を入力（Dify URL、メールアドレス、パスワード）
+    ↓
+ClaudeCode が自動で設定・テスト
+    ↓
+完成！
 ```
 
-### ステップ2：情報を入力（ClaudeCode が聞いてきます）
+### 情報を入力（ClaudeCode が聞いてきます）
 
 以下を答えるだけです：
 
@@ -55,7 +60,7 @@ ClaudeCode が自動で修正・テスト
 
 > **ヒント：** Dify のアプリ APIキーではなく、アカウントそのもののログイン情報です。
 
-### ステップ3：完了！
+### 完了！
 
 ClaudeCode が以下を自動でやってくれます：
 - 設定ファイル（.env）の作成
@@ -68,11 +73,20 @@ ClaudeCode が以下を自動でやってくれます：
 
 ## ✨ 使用開始：新規アプリ作成
 
-### `/dify-new-app` を実行
+### 使用する Skill：`managing-dify-apps`
 
-チャット画面で：
+新しいSkill構造に基づいて、以下を実行します：
+
 ```
-/dify-new-app
+チャットで `managing-dify-apps` を選ぶ
+    ↓
+「新しいアプリを作成したい」と説明
+    ↓
+ClaudeCode が質問
+    ↓
+ClaudeCode が自動で作成・テスト
+    ↓
+完成！
 ```
 
 ### ClaudeCode が質問してきます
@@ -110,11 +124,20 @@ ClaudeCode が以下を自動でやってくれます：
 
 ## ✏️ 既存アプリを修正
 
-### `/dify-edit-app` を実行
+### 使用する Skill：`managing-dify-apps`
 
-チャット画面で：
+新しいSkill構造に基づいて、以下を実行します：
+
 ```
-/dify-edit-app
+チャットで `managing-dify-apps` を選ぶ
+    ↓
+「既存のアプリを編集したい」と説明
+    ↓
+ClaudeCode が質問（アプリ ID、修正内容）
+    ↓
+ClaudeCode が自動で修正・テスト
+    ↓
+完成！
 ```
 
 ### ClaudeCode が質問してきます
@@ -232,17 +255,35 @@ ClaudeCode が修正を Dify に反映してテストします。
 | [開発ワークフロー](./docs/CLAUDECODE_WORKFLOW.md) | より詳しい使い方 |
 | [テンプレート例](./examples/templates/) | 実装例 5 つ |
 
-### Commands
+### Skills（推奨）
 
-| Command | 説明 |
-|---------|------|
-| `/dify-setup` | 初回セットアップ |
-| `/dify-new-app` | 新規アプリ作成（メイン） |
-| `/dify-edit-app` | 既存アプリ編集（メイン） |
-| `/dify-export` | Dify からダウンロード |
-| `/dify-sync` | YAML を修正してアップロード |
+新しい Agent-Skills ベースのアプローチ：
 
-> **ほとんどの場合、`/dify-new-app` と `/dify-edit-app` だけで十分です。**
+| Skill | 説明 |
+|-------|------|
+| `setting-up-dify-project` | 初回セットアップ（新） |
+| `managing-dify-apps` | アプリの作成・編集・管理（新） |
+
+> **推奨：新しい Skills を使用してください。**
+>
+> 詳細は [.claude/skills/](/.claude/skills/) を参照してください。
+
+### Commands（廃止予定）
+
+従来のコマンドベースのアプローチ：
+
+| Command | 説明 | 移行先 Skill |
+|---------|------|-------------|
+| `/dify-setup` | 初回セットアップ | `setting-up-dify-project` |
+| `/dify-new-app` | 新規アプリ作成 | `managing-dify-apps` |
+| `/dify-edit-app` | 既存アプリ編集 | `managing-dify-apps` |
+| `/dify-export` | Dify からダウンロード | `managing-dify-apps` |
+| `/dify-sync` | YAML を修正してアップロード | `managing-dify-apps` |
+
+> **注：** 従来のコマンドは後方互換性のため保持されていますが、
+> 新しい Skills への移行を推奨します。
+>
+> 詳細は各 Command のドキュメントを参照してください。
 
 ---
 
@@ -301,13 +342,23 @@ docker compose run --rm dify-creator sync \
 
 ## 🚀 最初のステップ
 
-1. チャットで `/dify-setup` を実行
-2. 設定を入力
-3. `/dify-new-app` または `/dify-edit-app` を実行
-4. 説明を入力
+### Skill ベースの新しいワークフロー（推奨）
+
+1. チャットで `setting-up-dify-project` Skill を選ぶ
+2. 設定を入力（Dify URL、メール、パスワード）
+3. `managing-dify-apps` Skill を選ぶ
+4. 「新しいアプリを作成したい」または「既存アプリを編集したい」と説明
 5. ClaudeCode が自動で完成させる
 
 **それだけです！**
+
+### 従来のコマンドベースのワークフロー（廃止予定）
+
+1. チャットで `/dify-setup` を実行（または新しい Skill を使用）
+2. 設定を入力
+3. `/dify-new-app` または `/dify-edit-app` を実行（または新しい Skill を使用）
+4. 説明を入力
+5. ClaudeCode が自動で完成させる
 
 ---
 

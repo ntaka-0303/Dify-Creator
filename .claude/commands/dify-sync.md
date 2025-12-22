@@ -1,5 +1,13 @@
 # dify-sync（修正を反映＋テスト実行）
 
+⚠️ **[重要] このコマンドは以下のSkillに統合されました：**
+
+> **新しいSkill: [`managing-dify-apps`](./../skills/managing-dify-apps/SKILL.md)**
+>
+> このコマンドはエージェント内部で自動的に使用されます。
+
+---
+
 **（主にエージェント内部で使用。ユーザーは `/dify-new-app` または `/dify-edit-app` を使ってください）**
 
 `app.dsl.yml` の修正を Dify に反映させて、すぐにテスト実行します。

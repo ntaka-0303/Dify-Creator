@@ -1,5 +1,16 @@
 # dify-setup（初回セットアップ：自動設定 + Docker build）
 
+⚠️ **[重要] このコマンドは以下のSkillに統合されました：**
+
+> **新しいSkill: [`setting-up-dify-project`](./../skills/setting-up-dify-project/SKILL.md)**
+>
+> Agent-Skillsベストプラクティスに準拠した新構造です。
+> より詳細なドキュメント: [setup-workflow.md](./../skills/setting-up-dify-project/reference/setup-workflow.md)
+>
+> **推奨**: 新しいSkillの使用をお勧めします。このコマンドは後方互換性のため保持されます。
+
+---
+
 このプロジェクトを使い始めるための完全な初期化を行います。ユーザーは情報を答えるだけで、後はすべて自動です。
 
 ## ユーザーに確認すること

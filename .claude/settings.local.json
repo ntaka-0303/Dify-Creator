@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit -m \"$(cat <<''EOF''\nリポジトリ整理：不要なファイル削除、.gitignore改善\n\n## 削除ファイル\n- examples/README.md: 情報が古い（新しいREADMEで説明済み）\n- .claude/settings.local.json: ローカルマシン固有の設定\n- .vscode/settings.json: 個別環境の設定\n\n## 改善内容\n- .gitignore に IDE設定ファイルを追加\n  - .claude/settings.local.json\n  - .cursor/settings.local.json\n  - .vscode/settings.json\n  - .idea/\n\n- .cursorrules を改善\n  - プロジェクト構造を明確に\n  - 開発時のポイントを追加\n  - 関連ファイルの説明を追加\n\n## 保持したファイル\n✅ examples/inputs.json: テスト入力サンプルとして必要\n✅ examples/templates/: ClaudeCodeが参照するテンプレート例\n\n🧠 Generated with Claude Code\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nリポジトリ整理：不要なファイル削除、.gitignore改善\n\n## 削除ファイル\n- examples/README.md: 情報が古い（新しいREADMEで説明済み）\n- .claude/settings.local.json: ローカルマシン固有の設定\n- .vscode/settings.json: 個別環境の設定\n\n## 改善内容\n- .gitignore に IDE設定ファイルを追加\n  - .claude/settings.local.json\n  - .cursor/settings.local.json\n  - .vscode/settings.json\n  - .idea/\n\n- .cursorrules を改善\n  - プロジェクト構造を明確に\n  - 開発時のポイントを追加\n  - 関連ファイルの説明を追加\n\n## 保持したファイル\n✅ examples/inputs.json: テスト入力サンプルとして必要\n✅ examples/templates/: ClaudeCodeが参照するテンプレート例\n\n🧠 Generated with Claude Code\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(docker compose run:*)",
+      "Bash(DIFY_ENV_FILE=.env docker compose run:*)",
+      "Bash(head:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

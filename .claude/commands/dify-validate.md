@@ -1,5 +1,13 @@
 # dify-validate（DSL検証：形式チェック）
 
+⚠️ **[重要] このコマンドは以下のSkillに統合されました：**
+
+> **新しいSkill: [`managing-dify-apps`](./../skills/managing-dify-apps/SKILL.md)**
+>
+> より詳細なドキュメントと参照資料: [dsl-guide.md](./../skills/managing-dify-apps/reference/dsl-guide.md)
+
+---
+
 **（主にエージェント内部で使用）**
 
 `app.dsl.yml` の形式が正しいか、Dify にアップロードする前にチェックします。
