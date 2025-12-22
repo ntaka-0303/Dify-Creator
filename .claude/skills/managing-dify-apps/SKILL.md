@@ -1,92 +1,92 @@
 ---
-name: managing-dify-apps
-description: Create, edit, validate, and deploy Dify AI applications. Use when creating new Dify apps, modifying existing apps, testing configurations, or syncing changes. Handles app creation workflows, YAML configuration edits, validation, and test execution.
+name: Difyアプリを管理・作成する
+description: Difyアプリの作成・編集・検証・デプロイを自動化します。新規アプリ作成、既存アプリ修正、設定テストが必要な場合に使用してください。YAML生成・編集、検証、テスト実行をすべて自動で行います。
 ---
 
-# Managing Dify Apps
+# Difyアプリを管理・作成する
 
-Create and manage Dify AI applications efficiently without opening the Dify Studio UI. This Skill handles the complete app lifecycle: creation, modification, validation, and deployment.
+ブラウザを開かずにDifyアプリを効率的に作成・管理できます。このSkillはアプリのライフサイクル全体をサポート：作成 → 修正 → 検証 → デプロイ
 
-## What this Skill does
+## このSkillでできること
 
-- **Create new apps**: Generate Dify apps from natural language descriptions
-- **Edit existing apps**: Modify prompts, workflows, variables, and logic
-- **Validate configurations**: Check DSL syntax and structure before deployment
-- **Test and deploy**: Execute test runs and sync changes to Dify
-- **Manage iterations**: Support iterative refinement with validation feedback loops
+- **新しいアプリを作成**: 自然言語説明からDifyアプリを自動生成
+- **既存アプリを編集**: プロンプト・ワークフロー・変数・ロジックを修正
+- **設定を検証**: デプロイ前にDSL構文をチェック
+- **テスト・デプロイ**: テスト実行とDifyへの同期を自動実行
+- **反復修正に対応**: 検証フィードバックループで効率的に改善
 
-## Quick start
+## クイックスタート
 
-### Creating a new app
+### 新しいアプリを作成
 
-1. Describe what you want: "I need a chatbot that answers customer questions"
-2. Specify the app type: Q&A chatbot, workflow, conditional logic, or API integration
-3. Claude handles the rest: generates YAML → validates → uploads → tests
+1. 作りたいアプリを説明：「顧客からの質問に自動で答えるチャットボット」
+2. アプリの種類を指定：Q&Aチャット、ワークフロー、条件分岐、API連携
+3. Claudeが自動処理：YAML生成 → 検証 → Difyへアップロード → テスト実行
 
-### Editing an existing app
+### 既存のアプリを編集
 
-1. Provide the app ID and describe changes: "Make the prompt more polite"
-2. Claude: downloads current config → modifies → validates → tests
-3. Review results and iterate until satisfied
+1. アプリIDと修正内容を指定：「プロンプトをもっと丁寧な回答にして」
+2. Claudeが自動処理：現在の設定をダウンロード → 修正 → 検証 → テスト実行
+3. 結果を確認して、満足するまで繰り返す
 
-### Testing and validation
+### テストと検証
 
-Run validation at any time to catch configuration errors before deployment.
+いつでも検証を実行してデプロイ前に設定エラーをキャッチできます。
 
-## Core workflows
+## コアワークフロー
 
-See [reference/workflows.md](reference/workflows.md) for detailed step-by-step workflows including:
-- Creating new apps with different types
-- Editing and iterating on existing apps
-- Validation and error handling
-- Troubleshooting common issues
+詳細は [reference/workflows.md](reference/workflows.md) を参照：
+- 異なるタイプのアプリ作成
+- 既存アプリの編集と反復改善
+- 検証とエラーハンドリング
+- よくある問題のトラブルシューティング
 
-## Key resources
+## 主要リソース
 
-**For templates and examples**:
-See [reference/templates.md](reference/templates.md) for:
-- All 5 available DSL templates
-- When to use each template
-- Template structure and customization
+**テンプレートと例**：
+[reference/templates.md](reference/templates.md) を参照：
+- 利用可能なDSLテンプレート5つ
+- 各テンプレートの使い分け
+- テンプレート構造とカスタマイズ方法
 
-**For DSL configuration**:
-See [reference/dsl-guide.md](reference/dsl-guide.md) for:
-- DSL YAML structure overview
-- Required fields and sections
-- Common configuration patterns
+**DSL設定**：
+[reference/dsl-guide.md](reference/dsl-guide.md) を参照：
+- DSL YAML構造の概要
+- 必須フィールドとセクション
+- よくある設定パターン
 
-**For troubleshooting**:
-See [reference/troubleshooting.md](reference/troubleshooting.md) for:
-- Common errors and solutions
-- Connection issues
-- Validation failures
-- Test execution problems
+**トラブルシューティング**：
+[reference/troubleshooting.md](reference/troubleshooting.md) を参照：
+- よくあるエラーと解決方法
+- 接続の問題
+- 検証の失敗
+- テスト実行の問題
 
-## Validation and feedback loops
+## 検証とフィードバックループ
 
-This Skill uses validation feedback loops to ensure quality:
+品質を確保するため、このSkillは検証フィードバックループを使用：
 
-1. **Create or modify** your app configuration
-2. **Validate** the YAML syntax and structure
-3. **Preview** proposed changes before applying
-4. **Test** the app with sample inputs
-5. **Iterate** if results don't match expectations
+1. **作成または修正** - アプリ設定を作成・修正
+2. **検証** - YAML構文と構造をチェック
+3. **プレビュー** - 変更内容を確認してから適用
+4. **テスト** - サンプル入力でアプリを実行
+5. **反復改善** - 結果が期待と異なる場合は修正
 
-Error messages point to specific problems, making it easy to fix issues.
+エラーメッセージは具体的な問題を指摘するので、修正が簡単です。
 
-## Supported app types
+## サポートするアプリタイプ
 
-- **Q&A Chatbot**: Simple question-answer interactions
-- **Workflow**: Multi-step process flows
-- **Conditional Logic**: Decision trees and branching logic
-- **API Integration**: Connect to external services
+- **Q&Aチャットボット**: シンプルな質問応答
+- **ワークフロー**: 複数ステップの処理
+- **条件分岐ロジック**: 判定分岐とルーティング
+- **API連携**: 外部サービスとの連携
 
-See [reference/templates.md](reference/templates.md) for detailed examples of each type.
+詳細は [reference/templates.md](reference/templates.md) を参照。
 
-## Prerequisites
+## 使う前に確認すること
 
-- Dify account and credentials (email/password)
-- Dify project already set up (see `setting-up-dify-project` Skill)
-- Basic understanding of your app's purpose and inputs/outputs
+- Difyアカウントと認証情報（メール・パスワード）
+- Difyプロジェクトが既にセットアップされていること（`Difyプロジェクトをセットアップする` Skillを参照）
+- アプリの目的と入出力の基本的な理解
 
-For initial setup, use the `setting-up-dify-project` Skill first.
+初期セットアップは `Difyプロジェクトをセットアップする` Skillを先に実行してください。

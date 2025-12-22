@@ -10,9 +10,9 @@
 
 ### 1️⃣ **新しいアプリを作る**
 ```
-チャットで `/dify-new-app` を選ぶ
+チャットで `managing-dify-apps` Skill を選ぶ
     ↓
-「どんなアプリを作りたいか」説明
+「新しいアプリを作成したい」と説明
     ↓
 ClaudeCode が自動で作成・テスト
     ↓
@@ -21,7 +21,7 @@ ClaudeCode が自動で作成・テスト
 
 ### 2️⃣ **既存のアプリを修正する**
 ```
-チャットで `/dify-edit-app` を選ぶ
+チャットで `managing-dify-apps` Skill を選ぶ
     ↓
 アプリのIDと「どう修正したいか」を説明
     ↓
@@ -216,15 +216,15 @@ cat examples/templates/3_llm_workflow.dsl.yml
 
 **A:** 最初は簡単な版を作ってから、少しずつ修正してください。
 
-1. 簡単な版を `/dify-new-app` で作成
-2. `/dify-edit-app` で少しずつ機能追加
+1. `managing-dify-apps` Skill で簡単な版を作成
+2. `managing-dify-apps` Skill で少しずつ機能追加
 
 ### Q: 複数人で開発したい
 
 **A:** Git を使用してください。
 
 1. このリポジトリをチーム全員で共有
-2. 各メンバーが `/dify-edit-app` で修正
+2. 各メンバーが `managing-dify-apps` Skill で修正
 3. Git で変更管理
 
 ### Q: アプリを公開したい
@@ -235,13 +235,9 @@ cat examples/templates/3_llm_workflow.dsl.yml
 
 ### Q: YAML（アプリの設定ファイル）を直接編集したい
 
-**A:** `app.dsl.yml` をテキストエディタで直接編集してから、以下を実行：
+**A:** `app.dsl.yml` をテキストエディタで直接編集してから、`managing-dify-apps` Skill を使用して修正を Dify に反映・テストします。
 
-```bash
-/dify-sync
-```
-
-ClaudeCode が修正を Dify に反映してテストします。
+詳細は [managing-dify-apps Skill ドキュメント](./.claude/skills/managing-dify-apps/SKILL.md) を参照してください。
 
 ---
 
@@ -268,22 +264,18 @@ ClaudeCode が修正を Dify に反映してテストします。
 >
 > 詳細は [.claude/skills/](/.claude/skills/) を参照してください。
 
-### Commands（廃止予定）
+### 🚀 新しい Agent-Skills ベース（推奨）
 
-従来のコマンドベースのアプローチ：
+ClaudeCode Agent-Skills ベストプラクティスに準拠した新しいSkill構造で、より効率的でメンテナンスしやすくなりました。
 
-| Command | 説明 | 移行先 Skill |
-|---------|------|-------------|
-| `/dify-setup` | 初回セットアップ | `setting-up-dify-project` |
-| `/dify-new-app` | 新規アプリ作成 | `managing-dify-apps` |
-| `/dify-edit-app` | 既存アプリ編集 | `managing-dify-apps` |
-| `/dify-export` | Dify からダウンロード | `managing-dify-apps` |
-| `/dify-sync` | YAML を修正してアップロード | `managing-dify-apps` |
+| Skill | 説明 |
+|-------|------|
+| `setting-up-dify-project`（Difyプロジェクトをセットアップする） | 初回セットアップ、認証情報設定、Docker構築 |
+| `managing-dify-apps`（Difyアプリを管理・作成する） | 新規アプリ作成、既存アプリ編集、検証、デプロイ |
 
-> **注：** 従来のコマンドは後方互換性のため保持されていますが、
-> 新しい Skills への移行を推奨します。
+> **推奨：新しい Skills を使用してください。**
 >
-> 詳細は各 Command のドキュメントを参照してください。
+> 詳細は [.claude/skills/](/.claude/skills/) を参照してください。
 
 ---
 
@@ -352,14 +344,6 @@ docker compose run --rm dify-creator sync \
 
 **それだけです！**
 
-### 従来のコマンドベースのワークフロー（廃止予定）
-
-1. チャットで `/dify-setup` を実行（または新しい Skill を使用）
-2. 設定を入力
-3. `/dify-new-app` または `/dify-edit-app` を実行（または新しい Skill を使用）
-4. 説明を入力
-5. ClaudeCode が自動で完成させる
-
 ---
 
 ## 📝 プロジェクト改善履歴
@@ -370,23 +354,24 @@ docker compose run --rm dify-creator sync \
 
 #### 🎯 主な改善点
 
-| 改善 | Before | After |
-|------|--------|-------|
-| **セットアップ** | `.env` を手動編集 | `/dify-setup` で全自動 |
-| **アプリ作成** | CLI コマンド + YAML 手動作成 | `/dify-new-app` で全自動 |
-| **アプリ編集** | CLI コマンド + YAML 手動編集 | `/dify-edit-app` で全自動 |
-| **必要なスキル** | ターミナル操作、YAML編集知識 | ClaudeCode に説明するだけ |
-| **所要時間** | 15分以上 | 2-3分 |
+| 改善 | v0.1.0 | v0.2.0 | v0.3.0（最新） |
+|------|--------|--------|------------|
+| **セットアップ** | `.env` を手動編集 | `/dify-setup` で全自動 | `setting-up-dify-project` Skill で全自動 |
+| **アプリ作成** | CLI + YAML 手動 | `/dify-new-app` で全自動 | `managing-dify-apps` Skill で全自動 |
+| **アプリ編集** | CLI + YAML 手動編集 | `/dify-edit-app` で全自動 | `managing-dify-apps` Skill で全自動 |
+| **必要なスキル** | ターミナル操作、YAML編集知識 | ClaudeCode に説明するだけ | ClaudeCode に説明するだけ |
+| **所要時間** | 15分以上 | 2-3分 | 2-3分 |
 
-#### 🔧 技術的な改善
+#### 🔧 v0.3.0 での技術的な改善
 
-1. **新しい Commands を追加**
-   - `/dify-new-app` - 新規アプリ作成の完全自動化
-   - `/dify-edit-app` - 既存アプリ編集の完全自動化
+1. **Agent-Skills ベストプラクティスへの準拠**
+   - `setting-up-dify-project` Skill - 初回セットアップの自動化
+   - `managing-dify-apps` Skill - アプリ作成・編集・管理の自動化
 
-2. **既存 Commands を改善**
-   - `/dify-setup` - .env 設定を完全自動化
-   - 他の Commands をエージェント向けに最適化
+2. **スキル構造の改善**
+   - SKILL.md メタデータ（日本語化）
+   - reference/ ドキュメント（日本語化）
+   - scripts/ ユーティリティスクリプト
 
 3. **ClaudeCode 統合の強化**
    - ClaudeCode がユーザーに質問を投げかけ、情報を収集
@@ -394,16 +379,16 @@ docker compose run --rm dify-creator sync \
    - ClaudeCode がテスト実行と結果分析を自動化
 
 4. **ドキュメント刷新**
-   - README を Command 中心のガイドに改版
+   - すべてのドキュメントを日本語化
+   - Skill 中心のガイドに改版
    - 非エンジニア向けの説明に統一
-   - ターミナルコマンドは「参考」欄に移動
 
 #### 📚 ドキュメント充実
 
-新しく追加：
+利用可能なリソース：
 - [ClaudeCode 開発ワークフロー](./docs/CLAUDECODE_WORKFLOW.md) - 詳細ガイド
 - [DSL 仕様書](./docs/DSL_SPECIFICATION.md) - 技術仕様
-- [Command ドキュメント](./claude/commands/) - 各 Command の説明
+- [Skill ドキュメント](./.claude/skills/) - 新しい Skill 詳細ガイド
 - **5 つの DSL テンプレート例** - 実装リファレンス
 
 ### 利用者からのフィードバック
@@ -424,26 +409,25 @@ docker compose run --rm dify-creator sync \
 
 ---
 
-## 🎓 旧バージョン（v0.1.0）から v0.2.0 への移行
+## 🎓 旧バージョンから最新版（v0.3.0）への更新
 
-旧バージョンをお使いの場合、以下の方法で最新版に更新できます：
+### v0.2.0 のコマンドを使用している場合
 
-### コマンド（推奨）
+旧版の `/dify-setup`、`/dify-new-app`、`/dify-edit-app` などのコマンドは削除されました。
 
-最新版のコマンドを使用してください：
+**新しい Skill ベースのアプローチを使用してください：**
 
-```bash
-/dify-setup      # 旧版：手動での .env 編集が必要
-                 # 新版：質問に答えるだけで自動化
+| 旧版コマンド | 新版 Skill |
+|---------|----------|
+| `/dify-setup` | `setting-up-dify-project` |
+| `/dify-new-app` | `managing-dify-apps` |
+| `/dify-edit-app` | `managing-dify-apps` |
+| `/dify-export` | `managing-dify-apps` |
+| `/dify-sync` | `managing-dify-apps` |
 
-/dify-new-app    # 新しいコマンド：ワンコマンドで新規作成
+### 利用可能なテンプレート
 
-/dify-edit-app   # 新しいコマンド：ワンコマンドで編集
-```
-
-### テンプレート
-
-新しい 5 つのテンプレートが利用可能：
+5 つの DSL テンプレートが `examples/templates/` に用意されています：
 
 ```
 examples/templates/

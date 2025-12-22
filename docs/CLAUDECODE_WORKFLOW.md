@@ -6,8 +6,8 @@
 >
 > このプロジェクトは、Agent-Skillsベストプラクティスに基づいた新しいSkill構造に移行しました。
 >
-> - **`setting-up-dify-project` Skill**: 初期セットアップ
-> - **`managing-dify-apps` Skill**: アプリの作成・編集・管理
+> - **`setting-up-dify-project`（Difyプロジェクトをセットアップする）Skill**: 初期セットアップ
+> - **`managing-dify-apps`（Difyアプリを管理・作成する）Skill**: アプリの作成・編集・管理
 >
 > 新しい Skills を使用すると、ClaudeCode が自動で YAML 生成・検証・テストを行います。
 > 詳細は [.claude/skills/](../.claude/skills/) を参照してください。

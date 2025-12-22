@@ -1,301 +1,301 @@
-# Detailed Workflows
+# 詳細ワークフロー
 
-## Contents
-- Creating new apps
-- Editing existing apps
-- Validation and testing
-- Iteration loops
-- Troubleshooting patterns
+## 目次
+- 新規アプリの作成
+- 既存アプリの編集
+- 検証とテスト
+- 反復改善ループ
+- トラブルシューティングパターン
 
 ---
 
-## Creating a new Dify app
+## 新規Difyアプリを作成
 
-Use this workflow when you want to create a brand new application.
+新しいアプリケーションをゼロから作成したい場合のワークフローです。
 
-### Step-by-step workflow
+### ステップバイステップワークフロー
 
-**Copy and track your progress:**
+**進捗を確認しながら実行：**
 
 ```
-Creating New App:
-- [ ] Step 1: Gather app requirements
-- [ ] Step 2: Choose app type
-- [ ] Step 3: Select appropriate template
-- [ ] Step 4: Generate initial YAML
-- [ ] Step 5: Validate configuration
-- [ ] Step 6: Register with Dify
-- [ ] Step 7: Run test execution
-- [ ] Step 8: Review results
-- [ ] Step 9: Iterate or finalize
+新規アプリ作成：
+- [ ] ステップ1：アプリの要件を整理
+- [ ] ステップ2：アプリの種類を選択
+- [ ] ステップ3：適切なテンプレートを選択
+- [ ] ステップ4：初期YAMLを生成
+- [ ] ステップ5：設定を検証
+- [ ] ステップ6：Difyに登録
+- [ ] ステップ7：テスト実行
+- [ ] ステップ8：結果を確認
+- [ ] ステップ9：反復改善または完成
 ```
 
-### Step 1: Gather app requirements
+### ステップ1：アプリの要件を整理
 
-Provide a detailed description of what you want to build:
+作りたいものについて詳しく説明してください：
 
-**Good examples:**
-- "A customer support chatbot that answers frequently asked questions from our knowledge base with a helpful tone"
-- "A workflow that analyzes customer sentiment from text and routes responses based on emotion (positive, neutral, negative)"
-- "An API connector that fetches weather data and summarizes it for end users"
+**良い例：**
+- 「顧客からのよくある質問に自動で答えるチャットボット。ナレッジベースから情報を取得して、親切なトーンで回答する」
+- 「テキストから顧客の感情を分析し、感情（ポジティブ・ニュートラル・ネガティブ）に応じて異なる対応をするワークフロー」
+- 「天気データを取得するAPI連携アプリ。データを取得して要約してユーザーに表示」
 
-**Important details to include:**
-- What is the main purpose?
-- What will users input?
-- What should the output look like?
-- Are there any special requirements? (tone, format, integrations)
+**含めるべき重要な情報：**
+- 主な目的は？
+- ユーザーは何を入力する？
+- 出力はどんな形式？
+- 特別な要件はあるか？（トーン、フォーマット、連携など）
 
-### Step 2: Choose app type
+### ステップ2：アプリの種類を選択
 
-Select one based on your requirements. See [templates.md](templates.md) for detailed examples.
+要件に基づいて選択してください。詳細は [templates.md](templates.md) を参照。
 
-| Type | Best for | Complexity |
-|------|----------|-----------|
-| **Q&A Chatbot** | Simple question-answer pairs, customer support | ⭐ Low |
-| **Workflow** | Multi-step processing, data transformation | ⭐⭐ Medium |
-| **Conditional Logic** | Decision trees, dynamic routing | ⭐⭐⭐ Higher |
-| **API Integration** | External service calls, data fetching | ⭐⭐⭐ Higher |
+| 種類 | 推奨用途 | 複雑度 |
+|------|--------|-------|
+| **Q&Aチャットボット** | シンプルな質問応答、カスタマーサポート | ⭐ 低 |
+| **ワークフロー** | 複数ステップ処理、データ変換 | ⭐⭐ 中 |
+| **条件分岐ロジック** | 判定木、動的ルーティング | ⭐⭐⭐ 高 |
+| **API連携** | 外部サービス呼び出し、データ取得 | ⭐⭐⭐ 高 |
 
-### Step 3: Select appropriate template
+### ステップ3：適切なテンプレートを選択
 
-Claude will help choose from 5 templates:
+Claudeが5つのテンプレートから選択するのをサポート：
 - `1_simple_chatbot.dsl.yml` → Q&A
-- `2_echo_workflow.dsl.yml` → Simple workflow
-- `3_llm_workflow.dsl.yml` → Standard workflow
-- `4_conditional_workflow.dsl.yml` → Complex logic
-- `5_http_api_workflow.dsl.yml` → API integration
+- `2_echo_workflow.dsl.yml` → シンプルワークフロー
+- `3_llm_workflow.dsl.yml` → 標準ワークフロー
+- `4_conditional_workflow.dsl.yml` → 複雑なロジック
+- `5_http_api_workflow.dsl.yml` → API連携
 
-See [templates.md](templates.md) for full details.
+詳細は [templates.md](templates.md) を参照。
 
-### Step 4: Generate initial YAML
+### ステップ4：初期YAMLを生成
 
-Claude generates a customized `app.dsl.yml` based on your requirements:
-- Sets app name and description
-- Configures input/output schemas
-- Creates prompts and instructions
-- Defines workflow steps (if applicable)
+Claudeが要件に基づいて `app.dsl.yml` をカスタマイズして生成：
+- アプリ名と説明を設定
+- 入出力スキーマを設定
+- プロンプトと指示を作成
+- ワークフローステップを定義（必要な場合）
 
-### Step 5: Validate configuration
+### ステップ5：設定を検証
 
-Run validation to catch errors early:
+エラーを早期に発見するため検証を実行：
 
 ```bash
 docker compose run --rm dify-creator validate --dsl app.dsl.yml
 ```
 
-**Expected output on success:**
+**成功時の出力例：**
 ```
-✅ Validation successful: DSL is structurally valid
+✅ 検証成功：DSLは構造的に有効です
 ```
 
-**On errors:**
-- Fix the reported issues
-- Revalidate until successful
+**エラーの場合：**
+- 報告されたエラーを修正
+- 成功するまで再検証
 
-See [troubleshooting.md](troubleshooting.md) for common errors.
+詳細は [troubleshooting.md](troubleshooting.md) を参照。
 
-### Step 6: Register with Dify
+### ステップ6：Difyに登録
 
-Upload the validated configuration to create the app:
+検証済みの設定をアップロードしてアプリを作成：
 
 ```bash
 docker compose run --rm dify-creator import --dsl app.dsl.yml
 ```
 
-This returns an `app_id` that you'll use for future edits. **Save this ID.**
+`app_id` が返されます。これは後の編集で使用するので **保存してください**。
 
-### Step 7: Run test execution
+### ステップ7：テスト実行
 
-Execute the app with sample inputs to verify it works:
+サンプル入力でアプリを実行して動作確認：
 
 ```bash
 docker compose run --rm dify-creator sync \
   --dsl app.dsl.yml \
-  --app-id <returned_app_id> \
+  --app-id <返されたapp_id> \
   --inputs-json examples/inputs.json
 ```
 
-Results are saved to `artifacts/run_result.json`.
+結果は `artifacts/run_result.json` に保存されます。
 
-### Step 8: Review results
+### ステップ8：結果を確認
 
-Examine the test output:
-- Did it produce the expected format?
-- Are responses appropriate for your use case?
-- Are there any errors or unexpected behavior?
+テスト結果を確認：
+- 期待通りのフォーマットが出力されたか？
+- 回答は使用例に適切か？
+- エラーや予期しない動作はないか？
 
-### Step 9: Iterate or finalize
+### ステップ9：反復改善または完成
 
-**If results are good:** ✅ App is ready to use or publish via Dify web UI
+**結果が良い場合：** ✅ アプリの準備完了。Difyウェブサイトで公開可能
 
-**If results need improvement:** → Use the "Editing" workflow below
+**結果に改善が必要な場合：** → 下記「編集」ワークフローを使用
 
 ---
 
-## Editing an existing Dify app
+## 既存Difyアプリを編集
 
-Use this workflow when you need to modify a running app.
+実行中のアプリを修正する場合のワークフローです。
 
-### Step-by-step workflow
+### ステップバイステップワークフロー
 
-**Copy and track your progress:**
+**進捗を確認しながら実行：**
 
 ```
-Editing Existing App:
-- [ ] Step 1: Get app ID from Dify
-- [ ] Step 2: Describe desired changes
-- [ ] Step 3: Download current configuration
-- [ ] Step 4: Apply modifications
-- [ ] Step 5: Preview changes (for approval)
-- [ ] Step 6: Validate configuration
-- [ ] Step 7: Upload to Dify
-- [ ] Step 8: Execute tests
-- [ ] Step 9: Review and iterate
+既存アプリ編集：
+- [ ] ステップ1：Difyからアプリのapp_idを取得
+- [ ] ステップ2：希望する変更を説明
+- [ ] ステップ3：現在の設定をダウンロード
+- [ ] ステップ4：修正を適用
+- [ ] ステップ5：変更をプレビュー（確認用）
+- [ ] ステップ6：設定を検証
+- [ ] ステップ7：Difyにアップロード
+- [ ] ステップ8：テストを実行
+- [ ] ステップ9：確認して反復改善
 ```
 
-### Step 1: Get app ID
+### ステップ1：app_idを取得
 
-From Dify web UI, find your app's ID in the URL:
+Difyのウェブサイトからアプリのapp_idを確認：
 
 ```
 https://cloud.dify.ai/app/abc123def456/overview
                          ^^^^^^^^^^^^^^
-                          This is your app_id
+                          これがapp_id
 ```
 
-### Step 2: Describe changes
+### ステップ2：変更を説明
 
-Provide clear descriptions of what to modify. Examples:
+修正内容を明確に説明してください。例：
 
-**Good descriptions:**
-- "Make the prompt more professional and formal"
-- "Add a new workflow step to summarize the response"
-- "Change the input field name from 'question' to 'customer_query'"
-- "Add conditional branching for different user types"
+**良い説明：**
+- 「プロンプトをもっと専門的でフォーマルにして」
+- 「応答内容をリスト形式から箇条書きに変更」
+- 「入力フィールド名を 'question' から 'customer_query' に変更」
+- 「ユーザータイプによる異なる処理を追加」
 
-**Vague descriptions (avoid):**
-- "Make it better"
-- "Fix it"
-- "Change the prompt"
+**曖昧な説明（避ける）：**
+- 「改善して」
+- 「修正して」
+- 「プロンプトを変更」
 
-### Step 3: Download current configuration
+### ステップ3：現在の設定をダウンロード
 
-Claude downloads the app's current configuration from Dify:
+Claudeが現在実行中の設定をダウンロード：
 
 ```bash
 docker compose run --rm dify-creator export \
-  --app-id <your_app_id> \
+  --app-id <あなたのapp_id> \
   --out app.dsl.yml
 ```
 
-This creates a local copy of what's currently running.
+ローカルコピーが作成されます。
 
-### Step 4: Apply modifications
+### ステップ4：修正を適用
 
-Claude modifies the configuration based on your description:
-- Edits prompts and instructions
-- Adds or removes workflow steps
-- Changes variables and schemas
-- Updates conditional logic
-- Modifies API endpoints (if applicable)
+Claudeが説明に基づいて設定を修正：
+- プロンプトと指示を編集
+- ワークフローステップを追加・削除
+- 変数とスキーマを変更
+- 条件分岐ロジックを更新
+- APIエンドポイントを修正（必要な場合）
 
-### Step 5: Preview changes (for approval)
+### ステップ5：変更をプレビュー（確認用）
 
-**Claude shows you a summary:**
-- What specifically is changing?
-- Lines added/removed?
-- Variable modifications?
+**Claudeが要約を表示：**
+- 具体的に何が変わるのか？
+- 追加・削除されたコード行？
+- 変数の修正内容？
 
-**Review and approve** before proceeding.
+**確認して承認してください。**
 
-### Step 6: Validate configuration
+### ステップ6：設定を検証
 
-Verify the modified YAML is syntactically correct:
+修正済みYAMLが正しい構文か確認：
 
 ```bash
 docker compose run --rm dify-creator validate --dsl app.dsl.yml
 ```
 
-If validation fails, Claude automatically fixes the issues and re-validates.
+検証失敗時は、Claudeが自動で問題を修正して再検証。
 
-### Step 7: Upload to Dify
+### ステップ7：Difyにアップロード
 
-Apply the modifications to your live app:
+修正内容をライブアプリに適用：
 
 ```bash
 docker compose run --rm dify-creator import \
   --dsl app.dsl.yml \
-  --app-id <your_app_id>
+  --app-id <あなたのapp_id>
 ```
 
-Changes are now in "draft" state (not publicly visible until you publish).
+変更は「ドラフト」状態で適用（公開前）。
 
-### Step 8: Execute tests
+### ステップ8：テストを実行
 
-Test the modified app with sample inputs:
+修正したアプリをサンプル入力でテスト：
 
 ```bash
 docker compose run --rm dify-creator sync \
   --dsl app.dsl.yml \
-  --app-id <your_app_id> \
+  --app-id <あなたのapp_id> \
   --inputs-json examples/inputs.json
 ```
 
-### Step 9: Review and iterate
+### ステップ9：確認して反復改善
 
-**Results look good?** ✅
-- Modifications are complete
-- Publish via Dify web UI when ready
+**結果が良い場合：** ✅
+- 修正完了
+- Difyウェブサイトで公開準備完了
 
-**Need more adjustments?** 🔄
-- Describe what's different or missing
-- Claude automatically iterates: modify → validate → test
-- Repeat until satisfied
+**調整が必要な場合：** 🔄
+- 何が違うか・何が足りないかを説明
+- Claudeが自動で反復実行：修正 → 検証 → テスト
+- 満足するまで繰り返し
 
-The validation feedback loop ensures each iteration is error-free and properly tested.
+検証フィードバックループで各反復がエラーなし・テスト済みになります。
 
 ---
 
-## Validation workflow
+## 検証ワークフロー
 
-Use this workflow to validate your configuration at any time.
+いつでも設定を検証できます。
 
 ```
-Validation Checklist:
-- [ ] YAML syntax is correct
-- [ ] Required fields present
-- [ ] App mode is valid (workflow/chat/agent)
-- [ ] Node definitions are properly structured
-- [ ] Variable names are consistent
-- [ ] Prompts are clear and actionable
+検証チェックリスト：
+- [ ] YAML構文が正しい
+- [ ] 必須フィールドが含まれている
+- [ ] アプリのモード（workflow/chat/agent）が有効
+- [ ] ノード定義が正しく構造化されている
+- [ ] 変数名が一貫している
+- [ ] プロンプトが明確で実行可能
 ```
 
-**Run validation:**
+**検証を実行：**
 
 ```bash
 docker compose run --rm dify-creator validate --dsl app.dsl.yml
 ```
 
-**If errors occur:**
-1. Read the error message carefully (it points to the specific problem)
-2. Fix the issue in `app.dsl.yml`
-3. Revalidate immediately
-4. Only proceed when validation passes
+**エラーが発生した場合：**
+1. エラーメッセージを注意深く読む（具体的な問題を指摘）
+2. `app.dsl.yml` のエラー部分を修正
+3. すぐに再検証
+4. 検証がパスするまで進めない
 
 ---
 
-## Test execution workflow
+## テスト実行ワークフロー
 
 ```
-Testing Workflow:
-- [ ] Step 1: Prepare test inputs
-- [ ] Step 2: Run test execution
-- [ ] Step 3: Check artifacts/run_result.json
-- [ ] Step 4: Compare against expectations
-- [ ] Step 5: Iterate or finalize
+テストワークフロー：
+- [ ] ステップ1：テスト入力を準備
+- [ ] ステップ2：テスト実行を実行
+- [ ] ステップ3：artifacts/run_result.json を確認
+- [ ] ステップ4：結果と期待値を比較
+- [ ] ステップ5：反復改善または完成
 ```
 
-**Run tests:**
+**テストを実行：**
 
 ```bash
 docker compose run --rm dify-creator sync \
@@ -305,101 +305,100 @@ docker compose run --rm dify-creator sync \
   --out-dir artifacts
 ```
 
-**Examine results:**
-- `artifacts/run_result.json` contains the app's output
-- Compare against what you expected
-- If output format or content doesn't match, iterate via editing workflow
+**結果を確認：**
+- `artifacts/run_result.json` にアプリの出力が含まれる
+- 期待値と比較
+- 形式や内容が一致しない場合は編集ワークフローで反復改善
 
 ---
 
-## Iteration patterns
+## 反復改善パターン
 
-### Pattern 1: Quick iterations (modify → test → review)
-
-```
-1. Make a small focused change (e.g., adjust prompt tone)
-2. Validate and test immediately
-3. Review results quickly
-4. Keep iterating until satisfied
-```
-
-**Recommended for:** Prompt tuning, variable changes, small fixes
-
-### Pattern 2: Structured iterations (gather → plan → implement → test)
+### パターン1：クイック反復（修正 → テスト → 確認）
 
 ```
-1. Collect all desired changes
-2. Plan the approach (which template? which steps?)
-3. Implement in batches
-4. Test thoroughly at each milestone
+1. 小さく焦点を絞った変更を実施（例：プロンプトのトーン調整）
+2. すぐに検証とテストを実行
+3. 結果をすばやく確認
+4. 満足するまで反復
 ```
 
-**Recommended for:** Major restructuring, complex workflows, architecture changes
+**推奨用途：** プロンプト調整、変数変更、小さな修正
 
-### Pattern 3: Validation-driven development (validate early and often)
+### パターン2：構造化反復（収集 → 計画 → 実装 → テスト）
 
 ```
-1. Make a change
-2. IMMEDIATELY validate (don't wait)
-3. Fix any issues before proceeding
-4. Test only after validation passes
+1. 必要な変更をすべて集める
+2. アプローチを計画（どのテンプレート？どのステップ？）
+3. バッチで実装
+4. マイルストーンごとに十分にテスト
 ```
 
-**Best practice:** This catches errors early and saves debugging time.
+**推奨用途：** 大規模なリストラクチャリング、複雑なワークフロー、アーキテクチャ変更
+
+### パターン3：検証駆動開発（変更 → すぐに検証 → 修正 → テスト）
+
+```
+1. 変更を実施
+2. すぐに検証（待たない）
+3. エラーがあれば修正
+4. 検証がパスしたらテスト実行
+```
+
+**ベストプラクティス：** 早期にエラーを発見でき、デバッグ時間を削減
 
 ---
 
-## Common iteration scenarios
+## よくある反復改善シナリオ
 
-### Scenario: "The output format is wrong"
+### シナリオ：「出力フォーマットが間違っている」
 
-**What to do:**
-1. Describe the issue: "Responses should be in bullet-point format, not paragraphs"
-2. Claude modifies the prompt to enforce the format
-3. Test again with same inputs
-4. Verify output matches expected format
+**対応方法：**
+1. 問題を説明：「応答は段落形式ではなく箇条書き形式にして」
+2. Claudeがプロンプトを修正して形式を強制
+3. 同じ入力でテスト
+4. 出力形式が期待と一致することを確認
 
-### Scenario: "The app is too slow"
+### シナリオ：「アプリが遅い」
 
-**What to do:**
-1. Check if workflow has unnecessary steps
-2. Simplify the process if possible
-3. Consider if API calls are needed
-4. Test performance with typical inputs
+**対応方法：**
+1. ワークフローに不要なステップがないか確認
+2. 可能なら処理を簡潔に
+3. APIコールが必要か検討
+4. 一般的な入力で性能をテスト
 
-### Scenario: "Some inputs cause errors"
+### シナリオ：「一部の入力でエラーが出る」
 
-**What to do:**
-1. Test with problematic inputs
-2. Add error handling in the workflow (if applicable)
-3. Improve input validation rules
-4. Test with edge cases
+**対応方法：**
+1. 問題の入力でテスト
+2. ワークフローにエラーハンドリングを追加（必要な場合）
+3. 入力検証ルールを改善
+4. エッジケースでテスト
 
-### Scenario: "I need to add a new feature"
+### シナリオ：「新機能を追加したい」
 
-**What to do:**
-1. Start with the current app (use editing workflow)
-2. Add the new feature as a workflow step
-3. Validate the new structure
-4. Test the combined functionality
-5. Iterate until it works smoothly
+**対応方法：**
+1. 現在のアプリから始める（編集ワークフロー使用）
+2. 新機能をワークフローステップとして追加
+3. 新しい構造を検証
+4. 統合された機能をテスト
+5. 期待通り動作するまで反復改善
 
 ---
 
-## Best practices
+## ベストプラクティス
 
-✅ **DO:**
-- Test after every meaningful change
-- Read error messages carefully—they're usually clear
-- Validate before uploading to Dify
-- Use checklists to track progress
-- Ask for clarification if instructions are unclear
-- Break complex changes into smaller iterations
+✅ **やるべきこと：**
+- 意味のある変更ごとにテストを実行
+- エラーメッセージを注意深く読む（通常は明確）
+- チェックリストを使って進捗を追跡
+- 不確実なら説明を求める
+- 複雑な変更は小さな反復に分割
 
-❌ **DON'T:**
-- Skip validation even if you're confident
-- Make multiple unrelated changes at once (makes debugging harder)
-- Upload to Dify without testing first
-- Ignore error messages—fix the root cause
-- Try to fix everything in one iteration
-- Assume the app works without testing edge cases
+❌ **避けるべきこと：**
+- 確信がなくても検証をスキップ
+- 複数の無関連な変更を同時にしない（デバッグが難しくなる）
+- テストなしでDifyにアップロード
+- エラーメッセージを無視（根本原因を修正）
+- すべてを1回の反復で修正しようとする
+- テストなしでエッジケースが機能すると仮定
