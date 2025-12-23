@@ -243,8 +243,8 @@ docker images | grep dify-creator
 その他のセットアップステップを完了した後：
 
 ```bash
-# セットアップ全体を検証
-docker compose run --rm dify-creator validate --dsl examples/templates/1_simple_chatbot.dsl.yml
+# セットアップ全体を検証（任意のテンプレートで確認可能）
+docker compose run --rm dify-creator validate --dsl examples/templates/DeepResearch.yml
 # 出力：✅ 検証成功
 ```
 

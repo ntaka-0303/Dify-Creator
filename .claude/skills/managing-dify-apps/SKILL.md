@@ -50,11 +50,11 @@ description: Difyアプリの作成・編集・検証・デプロイを自動化
 - テンプレート構造とカスタマイズ方法
 
 **実際のテンプレートファイル**：
-- `examples/templates/1_simple_chatbot.dsl.yml` - Q&Aチャットボット
-- `examples/templates/2_echo_workflow.dsl.yml` - シンプルワークフロー
-- `examples/templates/3_llm_workflow.dsl.yml` - 標準ワークフロー
-- `examples/templates/4_conditional_workflow.dsl.yml` - 条件分岐ロジック
-- `examples/templates/5_http_api_workflow.dsl.yml` - API連携
+- `examples/templates/DeepResearch.yml` - 深い調査を行う高度なチャットボット
+- `examples/templates/ウェブの検索と要約のワークフローパターン.yml` - Web検索と要約のワークフロー
+- `examples/templates/投資分析レポート コパイロット.yml` - Yahoo Finance APIを使った投資分析エージェント
+- `examples/templates/知識リトリーバル + チャットボット.yml` - 知識検索機能付きチャットボット
+- `examples/templates/質問分類器 + 知識 + チャットボット.yml` - 質問分類と知識検索を組み合わせたチャットボット
 
 **テスト用サンプル入力**：
 - `examples/inputs.json` - アプリのテスト実行用サンプルデータ
