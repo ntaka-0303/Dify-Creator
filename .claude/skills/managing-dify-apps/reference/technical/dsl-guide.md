@@ -1,15 +1,22 @@
-# DSL 設定ガイド
+# Dify DSL 設定ガイド
 
-Dify DSL（ドメイン固有言語）設定構造の簡単なリファレンスです。
+Dify DSL（ドメイン固有言語）設定構造の包括的なリファレンスです。
+
+## 目次
+- 基本構造
+- アプリケーションモード
+- ワークフローノード詳細
+- 変数とデータフロー
+- ベストプラクティス
+
+---
 
 ## 概要
 
 DifyアプリはYAML形式で定義されます（DSLバージョン 0.5.0）。各アプリは以下を必要とします：
 - **基本メタデータ**: name、description、icon
-- **モード選択**: chat、workflow、またはagent
-- **設定**: モデル設定（chat）またはワークフローノード（workflow）
-
-詳細な技術仕様については、[DSL_SPECIFICATION.md](../../docs/DSL_SPECIFICATION.md)を参照してください。
+- **モード選択**: chat、workflow、advanced-chat、またはagent-chat
+- **設定**: モデル設定またはワークフローノード
 
 ---
 
@@ -21,298 +28,626 @@ DifyアプリはYAML形式で定義されます（DSLバージョン 0.5.0）。
 version: "0.5.0"
 kind: app
 
-metadata:
-  name: "Your App Name"
-  description: "What it does"
-  icon: "🤖"
-  icon_background: "#f0f0f0"
-
 app:
-  name: "Your App Name"
-  mode: "chat"  # or "workflow" or "agent"
-  description: "What it does"
+  name: "アプリ名"
+  description: "アプリの説明"
   icon: "🤖"
-  icon_background: "#f0f0f0"
+  icon_background: "#FFEAD5"
+  mode: "workflow"  # chat/workflow/advanced-chat/agent-chat
 
-# Then either model_config (for chat) OR workflow (for workflow)
-model_config:
-  # Chat mode configuration...
-  opening_statement: "Hi, how can I help?"
-  system_prompt: "You are helpful..."
+# モードに応じた設定
+model_config:  # chat/agent-chatモードの場合
+  # チャット設定...
 
-# OR
-
-workflow:
-  # Workflow mode configuration...
-  nodes:
-    - id: "node_id"
-      type: "llm"
-      # ...
+workflow:  # workflow/advanced-chatモードの場合
+  # ワークフロー設定...
 ```
 
 ---
 
-## モード選択
+## アプリケーションモード
 
-### チャットモード
+### 1. Chat（チャット）
+シンプルな対話型アプリ
+
 ```yaml
 app:
   mode: "chat"
+
 model_config:
-  opening_statement: "Initial greeting"
-  system_prompt: "Instructions for Claude"
+  opening_statement: "こんにちは！"
+  system_prompt: "あなたは親切なアシスタントです"
   model:
-    provider: "anthropic"
-    name: "claude-3-5-sonnet-20241022"
-    temperature: 0.7
-    max_tokens: 2048
+    provider: "openai"
+    name: "gpt-4o"
+    mode: chat
+    completion_params:
+      temperature: 0.7
 ```
 
-**用途：** Q&A、対話型インタラクション
+**用途：** Q&A、カスタマーサポート、シンプルな対話
 
-### ワークフローモード
+### 2. Workflow（ワークフロー）
+複数ステップの処理フロー
+
 ```yaml
 app:
   mode: "workflow"
+
 workflow:
-  nodes:
-    - id: "start"
-      type: "start"
-    - id: "llm_step"
-      type: "llm"
-      # ...
-    - id: "end"
-      type: "end"
+  graph:
+    edges: []
+    nodes: []
 ```
 
-**用途：** マルチステップ処理、複雑なロジック、API統合
+**用途：** データ処理、API統合、複雑なロジック
 
-### エージェントモード
+### 3. Advanced Chat（高度なチャット）
+ワークフローとチャットの組み合わせ
+
 ```yaml
 app:
-  mode: "agent"
-model_config:
-  # Similar to chat, but with agent-specific configuration
+  mode: "advanced-chat"
+
+workflow:
+  conversation_variables: []
+  graph:
+    edges: []
+    nodes: []
 ```
 
-**用途：** ツール使用を伴う自律エージェント
+**用途：** 知識検索、質問分類、複雑な対話フロー
+
+### 4. Agent Chat（エージェントチャット）
+ツール使用を伴う自律エージェント
+
+```yaml
+app:
+  mode: "agent-chat"
+
+model_config:
+  agent_mode:
+    enabled: true
+    max_iteration: 5
+    strategy: function_call
+    tools: []
+```
+
+**用途：** API呼び出し、外部ツール統合、複雑なタスク実行
 
 ---
 
-## 一般的な設定パターン
+## ワークフローノード詳細
 
-### 変数付きチャットアプリ
+### Start（開始）ノード
+
+ワークフローの入口点
 
 ```yaml
-model_config:
-  system_prompt: |
-    You are a support agent for {company_name}.
-    Current user tier: {user_tier}
-    Respond appropriately for their tier.
-
-  prompt_variables:
-    - variable_name: "company_name"
-      type: "string"
-    - variable_name: "user_tier"
-      type: "string"
-
-  model:
-    provider: "anthropic"
-    name: "claude-3-5-sonnet-20241022"
-    temperature: 0.7
+- id: "1731228343114"
+  data:
+    type: start
+    title: 開始
+    variables:
+      - type: text-input
+        variable: user_query
+        label: ユーザーの質問
+        required: true
+        max_length: 500
 ```
 
-### 複数ステップを含むワークフロー
+**変数タイプ：**
+- `text-input`: 短文テキスト
+- `paragraph`: 長文テキスト
+- `number`: 数値
+- `file`: ファイルアップロード
+- `select`: 選択肢
+
+### LLM（言語モデル）ノード
+
+テキスト生成と分析
 
 ```yaml
-workflow:
-  variable_pool:
-    - variable_name: "input_text"
-      type: "string"
-      description: "User input"
-
-  nodes:
-    - id: "start"
-      type: "start"
-      data:
-        - key: "input_text"
-          type: "string"
-
-    - id: "analyze"
-      type: "llm"
-      data:
-        system_prompt: "Analyze this text..."
-        input_mapping:
-          text: "${start.input_text}"
-
-    - id: "output"
-      type: "end"
-      output_mapping:
-        result: "${analyze.output}"
+- id: "1731229438627"
+  data:
+    type: llm
+    title: LLM処理
+    model:
+      provider: openai
+      name: gpt-4o
+      mode: chat
+      completion_params:
+        temperature: 0.7
+    prompt_template:
+      - id: "prompt1"
+        role: system
+        text: 'あなたは専門家です。{{#1731228343114.user_query#}}に答えてください。'
+    context:
+      enabled: true
+      variable_selector:
+        - "1731228343114"
+        - "user_query"
+    vision:
+      enabled: false
 ```
 
-### 条件分岐を含むワークフロー
+**重要ポイント：**
+- 変数参照: `{{#ノードID.変数名#}}`
+- temperature: 0.0（決定的） ～ 1.0（創造的）
+- プロンプトはシングルクォートで括る
+
+### End（終了）ノード
+
+ワークフローの出力
 
 ```yaml
-nodes:
-  - id: "classifier"
-    type: "llm"
-    data:
-      system_prompt: "Classify: complaint or question?"
+- id: "1731228345560"
+  data:
+    type: end
+    title: 終了
+    outputs:
+      - value_selector:
+          - "1731229438627"
+          - "text"
+        variable: result
+```
 
-  - id: "branch"
-    type: "if"
-    data:
-      condition: "${classifier.output.contains('complaint')}"
+### Question Classifier（質問分類器）ノード
 
-  - id: "complaint_handler"
-    type: "llm"
-    parent_node: "branch"
-    data:
-      system_prompt: "Handle complaint..."
+質問を自動分類
 
-  - id: "output"
-    type: "end"
+```yaml
+- id: "1731230000000"
+  data:
+    type: question-classifier
+    title: 質問分類器
+    model:
+      provider: openai
+      name: gpt-4o
+      mode: chat
+      completion_params:
+        temperature: 0.7
+    query_variable_selector:
+      - "1731228343114"
+      - "user_query"
+    classes:
+      - id: '1'
+        name: 技術的な質問
+      - id: '2'
+        name: 請求に関する質問
+```
+
+**エッジ接続：**
+```yaml
+edges:
+  - source: "1731230000000"
+    sourceHandle: '1'  # クラスID
+    target: "技術サポートノードID"
+    targetHandle: target
+    data:
+      sourceType: question-classifier
+      targetType: llm
+```
+
+### Knowledge Retrieval（知識取得）ノード
+
+ナレッジベースから情報検索
+
+```yaml
+- id: "1731231000000"
+  data:
+    type: knowledge-retrieval
+    title: 知識取得
+    dataset_ids:
+      - "データセットID"
+    retrieval_mode: multiple
+    multiple_retrieval_config:
+      reranking_enable: true
+      reranking_mode: weighted_score
+      top_k: 4
+      weights:
+        vector_setting:
+          embedding_model_name: text-embedding-3-large
+          embedding_provider_name: openai
+          vector_weight: 1
+        keyword_setting:
+          keyword_weight: 0
+    query_variable_selector:
+      - "1731228343114"
+      - "user_query"
+```
+
+### IF/ELSE（条件分岐）ノード
+
+条件に基づく分岐
+
+```yaml
+- id: "1731232000000"
+  data:
+    type: if-else
+    title: 条件分岐
+    cases:
+      - case_id: 'true'
+        logical_operator: and
+        conditions:
+          - id: "cond1"
+            varType: string
+            variable_selector:
+              - "1731228343114"
+              - "user_query"
+            comparison_operator: 'contains'
+            value: '緊急'
+```
+
+**比較演算子：**
+- `contains`: 含む
+- `not contains`: 含まない
+- `start with`: 始まる
+- `end with`: 終わる
+- `is`: 完全一致
+- `is not`: 完全不一致
+- `=`, `≠`, `>`, `<`, `≥`, `≤`: 数値比較
+
+**エッジ接続：**
+```yaml
+edges:
+  - source: "1731232000000"
+    sourceHandle: 'true'
+    target: "緊急処理ノードID"
+    data:
+      sourceType: if-else
+      targetType: llm
+  - source: "1731232000000"
+    sourceHandle: 'false'
+    target: "通常処理ノードID"
+    data:
+      sourceType: if-else
+      targetType: llm
+```
+
+### HTTP Request（HTTPリクエスト）ノード
+
+外部API呼び出し
+
+```yaml
+- id: "1731233000000"
+  data:
+    type: http-request
+    title: HTTPリクエスト
+    authorization:
+      type: no-auth  # no-auth/basic/bearer
+      config: null
+    method: post  # get/post/put/delete
+    url: "https://api.example.com/endpoint"
+    headers: "Content-Type:application/json"
+    body:
+      type: json
+      data:
+        - id: "key1"
+          key: ''
+          type: text
+          value: |
+            {
+              "query": "{{#1731228343114.user_query#}}"
+            }
+    timeout:
+      max_connect_timeout: 30
+      max_read_timeout: 60
+      max_write_timeout: 60
+```
+
+### Tool（ツール）ノード
+
+#### JinaReader（Webスクレイピング）
+
+```yaml
+- id: "1731234000000"
+  data:
+    type: tool
+    title: JinaReader
+    provider_id: jina
+    provider_name: jina
+    provider_type: builtin
+    tool_label: JinaReader
+    tool_name: jina_reader
+    tool_configurations:
+      gather_all_images_at_the_end: 0
+      gather_all_links_at_the_end: 0
+      image_caption: 0
+      no_cache: 0
+      proxy_server: null
+      summary: 0
+      target_selector: null
+      wait_for_selector: null
+    tool_parameters:
+      url:
+        type: mixed
+        value: '{{#1731228343114.url#}}'
+```
+
+#### TavilySearch（Web検索）
+
+```yaml
+- id: "1731235000000"
+  data:
+    type: tool
+    title: TavilySearch
+    provider_id: tavily
+    provider_name: tavily
+    provider_type: builtin
+    tool_label: TavilySearch
+    tool_name: tavily_search
+    tool_configurations:
+      exclude_domains: null
+      include_domains: null
+      include_answer: null
+      include_images: null
+      include_raw_content: null
+      max_results: 3
+      search_depth: basic  # basic/advanced
+    tool_parameters:
+      query:
+        type: mixed
+        value: '{{#1731228343114.search_query#}}'
+```
+
+### Code（コード実行）ノード
+
+Pythonコードの実行
+
+```yaml
+- id: "1731236000000"
+  data:
+    type: code
+    title: Pythonコード実行
+    code_language: python3
+    code: "def main(input_text: str) -> dict:\n    result = input_text.upper()\n    return {\n        \"output\": result\n    }"
+    outputs:
+      output:
+        type: string
+        children: null
+    variables:
+      - value_selector:
+          - "1731228343114"
+          - "user_query"
+        variable: input_text
+```
+
+**利用可能なライブラリ：**
+- datetime, math, random, re, string
+- json, base64, hashlib
+- その他多数（詳細はworkflow_generator_prompt.ymlを参照）
+
+**出力型：**
+- string, number, object, array
+- array[string], array[number], array[object]
+
+### Parameter Extractor（パラメータ抽出）ノード
+
+テキストから構造化データを抽出
+
+```yaml
+- id: "1731237000000"
+  data:
+    type: parameter-extractor
+    title: パラメータ抽出
+    query:
+      - "1731228343114"
+      - "user_query"
+    model:
+      provider: openai
+      name: gpt-4o
+      mode: chat
+      completion_params:
+        temperature: 0.0
+    reasoning_mode: function_call  # prompt/function_call
+    parameters:
+      - name: product_name
+        type: string
+        description: 製品名
+        required: true
+      - name: quantity
+        type: number
+        description: 数量
+        required: true
+    instruction: |
+      ユーザーの入力から製品名と数量を抽出してください。
+```
+
+**出力変数：**
+- 定義した各パラメータ
+- `__is_success`: 抽出成功フラグ（0/1）
+- `__reason`: エラー理由
+
+### Answer（応答）ノード
+
+チャットモードでの応答出力
+
+```yaml
+- id: "1731238000000"
+  data:
+    type: answer
+    title: 応答出力
+    answer: |
+      検索結果：{{#1731229438627.text#}}
+    variables: []
+```
+
+### Template Transform（テンプレート変換）ノード
+
+Jinja2テンプレートによる文字列生成
+
+```yaml
+- id: "1731239000000"
+  data:
+    type: template-transform
+    title: テンプレート変換
+    template: |
+      こんにちは、{{ user_name }}さん！
+      {% if score >= 80 %}
+      合格です！
+      {% else %}
+      不合格です。
+      {% endif %}
+    variables:
+      - value_selector:
+          - "1731228343114"
+          - "user_name"
+        variable: user_name
+      - value_selector:
+          - "1731228343114"
+          - "score"
+        variable: score
+```
+
+### Variable Aggregator（変数集約）ノード
+
+複数の変数を統合
+
+```yaml
+- id: "1731240000000"
+  data:
+    type: variable-aggregator
+    title: 変数集約器
+    output_type: string
+    variables:
+      - - "1731237000000"  # IF分岐からの出力1
+        - "result"
+      - - "1731238000000"  # IF分岐からの出力2
+        - "result"
 ```
 
 ---
 
-## キーセクションリファレンス
+## エッジ（接続）の定義
 
-### `metadata` セクション
+ノード間の接続を定義
+
 ```yaml
-metadata:
-  name: "Display Name"
-  description: "Human-readable description"
-  icon: "emoji or URL"
-  icon_background: "#hexcolor"
+graph:
+  edges:
+    # 基本接続
+    - source: "開始ノードID"
+      target: "LLMノードID"
+      data:
+        sourceType: start
+        targetType: llm
+      sourceHandle: source
+      targetHandle: target
+
+    # 質問分類器からの分岐
+    - source: "質問分類器ノードID"
+      sourceHandle: '1'  # クラスID
+      target: "ターゲットノードID"
+      targetHandle: target
+      data:
+        sourceType: question-classifier
+        targetType: llm
+
+    # IF/ELSE分岐
+    - source: "IF/ELSEノードID"
+      sourceHandle: 'true'
+      target: "TRUE分岐ノードID"
+      data:
+        sourceType: if-else
+        targetType: llm
+    - source: "IF/ELSEノードID"
+      sourceHandle: 'false'
+      target: "FALSE分岐ノードID"
+      data:
+        sourceType: if-else
+        targetType: llm
 ```
 
-### `model_config` セクション（チャット/エージェントモード）
-```yaml
-model_config:
-  opening_statement: "Initial greeting message"
-  system_prompt: "Instructions for the model"
+---
 
-  model:
-    provider: "anthropic"
-    name: "claude-3-5-sonnet-20241022"
-    temperature: 0.7          # 0.0 = deterministic, 1.0 = creative
-    max_tokens: 2048          # Max output length
+## 変数とデータフロー
 
-  prompt_variables: []        # Variables for dynamic prompts
-  tools: []                   # Tools/plugins (if any)
-  knowledge_bases: []         # Knowledge bases (if any)
+### 変数参照
+
+ワークフロー内で変数を参照：
+
+```
+{{#ノードID.変数名#}}
 ```
 
-### `workflow` セクション（ワークフローモード）
+**例：**
+- `{{#1731228343114.user_query#}}` - 開始ノードの入力
+- `{{#1731229438627.text#}}` - LLMノードの出力
+- `{{#1731233000000.body#}}` - HTTPリクエストの応答
+
+### 会話変数（Advanced Chatモード）
+
 ```yaml
 workflow:
-  variable_pool:              # Global variables
-    - variable_name: "name"
-      type: "string"
-
-  nodes:                      # Workflow steps
+  conversation_variables:
     - id: "unique_id"
-      type: "llm|if|http_request|etc"
-      title: "Step Name"
-      data:
-        # Type-specific configuration
+      name: topics
+      description: "調査トピックのリスト"
+      value: []
+      value_type: array[string]
+      selector:
+        - conversation
+        - topics
 ```
 
-### ワークフロー内のノードタイプ
-
-| タイプ | 目的 | キーフィールド |
-|------|---------|-----------|
-| `start` | ワークフロー入口 | `data: [入力定義]` |
-| `llm` | 言語モデルの呼び出し | `system_prompt`、`model`、`input_mapping` |
-| `if` | 条件分岐 | `condition`、branches |
-| `http_request` | 外部API呼び出し | `method`、`url`、`headers`、`body` |
-| `text_processing` | テキスト操作 | `operation`、`input_mapping` |
-| `code` | コード実行 | `language`、`code`、`input_mapping` |
-| `end` | ワークフロー出力 | `output_mapping` |
+**用途：** チャットセッション間でデータを保持
 
 ---
 
-## モデル設定の詳細
+## ベストプラクティス
 
-### 温度設定
+### 1. ノードIDの管理
+
+```
+✅ 良い例: 17000000000000 から 17999999999999 の範囲
+❌ 悪い例: 任意の数字、重複ID
+```
+
+### 2. プロンプトの書き方
 
 ```yaml
+# ✅ 良い例
+prompt_template:
+  - role: system
+    text: |
+      あなたは専門家です。
+      以下の質問に答えてください：
+      {{#1731228343114.user_query#}}
+
+# ❌ 悪い例
+prompt_template:
+  - role: system
+    text: "答えて"  # 不十分な指示
+```
+
+### 3. エラーハンドリング
+
+```yaml
+# Parameter Extractorの成功チェック
+- id: "if_check"
+  data:
+    type: if-else
+    cases:
+      - case_id: 'true'
+        conditions:
+          - varType: number
+            variable_selector:
+              - "1731237000000"
+              - "__is_success"
+            comparison_operator: '='
+            value: '1'
+```
+
+### 4. モデル設定
+
+```yaml
+# 用途に応じた温度設定
 model:
-  temperature: 0.7
-```
-
-| 値 | 動作 | 適している用途 |
-|-------|----------|----------|
-| 0.0 | 決定的、一貫性あり | Q&A、事実ベースの回答 |
-| 0.3-0.5 | 焦点化されて多少の多様性 | カスタマーサポート、構造化出力 |
-| 0.7 | バランス型（デフォルト） | 一般的な対話的使用 |
-| 0.9-1.0 | 創造的、多様性あり | クリエイティブライティング、ブレーンストーミング |
-
-### 最大トークン
-
-```yaml
-model:
-  max_tokens: 2048
-```
-
-**ガイドライン：**
-- カスタマーサポート：512-1024
-- 分析/要約：1024-2048
-- クリエイティブコンテンツ：2048-4096
-
-### プロンプト変数
-
-```yaml
-prompt_variables:
-  - variable_name: "customer_tier"
-    type: "string"
-  - variable_name: "request_count"
-    type: "number"
-```
-
-プロンプト内での使用：
-```yaml
-system_prompt: |
-  Customer tier: {customer_tier}
-  Requests handled: {request_count}
-  Adjust service level accordingly.
-```
-
----
-
-## 入出力スキーマ
-
-### 入力を定義（チャットモード）
-
-```yaml
-model_config:
-  input_variables:
-    - variable_name: "question"
-      type: "string"
-      description: "Customer question"
-
-  output:
-    - variable_name: "response"
-      type: "string"
-      description: "AI response"
-```
-
-### 入力を定義（ワークフローモード）
-
-```yaml
-workflow:
-  variable_pool:
-    - variable_name: "document_text"
-      type: "string"
-      description: "Document to analyze"
-
-  nodes:
-    - id: "start"
-      data:
-        - key: "document_text"
-          type: "string"
+  completion_params:
+    temperature: 0.0   # 事実ベース、決定的
+    # temperature: 0.5  # バランス型
+    # temperature: 1.0  # 創造的
 ```
 
 ---
@@ -322,43 +657,24 @@ workflow:
 デプロイ前に確認：
 
 ```
-✅ version is "0.5.0"
-✅ kind is "app"
-✅ metadata.name is set
-✅ app.mode is valid (chat/workflow/agent)
-✅ app.name matches metadata.name
-✅ model_config exists (for chat/agent mode)
-✅ workflow exists (for workflow mode)
-✅ All node IDs are unique
-✅ All variable references are valid
-✅ system_prompt is clear and specific
-✅ YAML syntax is valid (no indentation errors)
+✅ version: "0.5.0"
+✅ kind: app
+✅ app.mode が有効（chat/workflow/advanced-chat/agent-chat）
+✅ すべてのノードIDがユニーク
+✅ すべての変数参照が有効
+✅ エッジの source/target が存在するノードを指す
+✅ YAMLの構文が正しい（インデント、引用符）
+✅ 必須フィールドがすべて設定されている
 ```
 
-検証を実行：
+**検証コマンド：**
 ```bash
 docker compose run --rm dify-creator validate --dsl app.dsl.yml
 ```
 
 ---
 
-## よくあるエラーと修正
-
-### エラー：必須フィールドが見つかりません
-
-```
-Error: Required field 'workflow' not found
-```
-
-**修正：** `app.mode`を確認してください。「workflow」の場合は、`workflow`セクションが必須です。
-
-### エラー：無効なモード
-
-```
-Error: 'app.mode' must be one of: workflow, chat, agent
-```
-
-**修正：** スペルを確認してください。モード値は小文字のみです。
+## よくあるエラーと解決
 
 ### エラー：ノードが見つかりません
 
@@ -366,7 +682,15 @@ Error: 'app.mode' must be one of: workflow, chat, agent
 Error: Reference to undefined node 'process_step'
 ```
 
-**修正：** リファレンス内のノードID表記を確認してください。大文字小文字を区別します。
+**解決：** エッジのsource/targetが正しいノードIDを指しているか確認
+
+### エラー：無効な変数参照
+
+```
+Error: Invalid variable reference '{{#node.var#}}'
+```
+
+**解決：** ノードIDと変数名を確認。大文字小文字を区別します。
 
 ### エラー：YAMLの構文エラー
 
@@ -374,15 +698,51 @@ Error: Reference to undefined node 'process_step'
 Error: Unexpected indent at line 42
 ```
 
-**修正：** YAMLインデントは一貫している必要があります（通常2スペース）。配置を確認してください。
+**解決：** インデントを確認（2スペース推奨）
+
+---
+
+## 実用例
+
+### 質問分類 + 知識検索 + LLM応答
+
+```yaml
+workflow:
+  graph:
+    edges:
+      - source: "start"
+        target: "classifier"
+        data: {sourceType: start, targetType: question-classifier}
+      - source: "classifier"
+        sourceHandle: '1'
+        target: "knowledge1"
+        data: {sourceType: question-classifier, targetType: knowledge-retrieval}
+      - source: "knowledge1"
+        target: "llm"
+        data: {sourceType: knowledge-retrieval, targetType: llm}
+      - source: "llm"
+        target: "end"
+        data: {sourceType: llm, targetType: end}
+
+    nodes:
+      - id: "start"
+        data: {type: start, ...}
+      - id: "classifier"
+        data: {type: question-classifier, classes: [...]}
+      - id: "knowledge1"
+        data: {type: knowledge-retrieval, ...}
+      - id: "llm"
+        data: {type: llm, ...}
+      - id: "end"
+        data: {type: end, ...}
+```
 
 ---
 
 ## 詳細情報
 
-- [完全なDSL仕様](../../docs/DSL_SPECIFICATION.md)
 - [テンプレート例](templates.md)
-- [ワークフローガイド](workflows.md)
-- [Dify公式ドキュメント](https://docs.dify.ai/)
+- [ワークフローガイド](../core/workflows.md)
+- [完全なDSL仕様](../../../../docs/DSL_SPECIFICATION.md)
 
-ほとんどのユーザーにとって、[templates.md](templates.md)のテンプレートは必要なすべての構造を提供しています。テンプレートをコピーしてカスタマイズします。最初から構築する必要はありません。
+**推奨：** [templates.md](templates.md)の実際のテンプレートから始めて、必要に応じてカスタマイズしてください。
