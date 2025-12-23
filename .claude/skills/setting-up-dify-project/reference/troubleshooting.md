@@ -498,7 +498,7 @@ sudo ufw allow 5001
    docker compose run --rm dify-creator login
 
 ✅ サンプルテンプレートが検証済み
-   docker compose run --rm dify-creator validate --dsl examples/templates/1_simple_chatbot.dsl.yml
+   docker compose run --rm dify-creator validate --dsl examples/templates/DeepResearch.yml
 
 ✅ .envがgitにない
    git status | grep .env

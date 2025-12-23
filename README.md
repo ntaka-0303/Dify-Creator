@@ -196,18 +196,18 @@ ClaudeCode が自動で修正・テスト
 
 ### Q: テンプレートを見たい
 
-**A:** 以下に 5 つのテンプレート例があります：
+**A:** 以下に 5 つのDify公式テンプレート例があります：
 
 | テンプレート | 用途 |
 |-----------|------|
-| 1_simple_chatbot.dsl.yml | Q&A チャットボット |
-| 2_echo_workflow.dsl.yml | シンプルなワークフロー |
-| 3_llm_workflow.dsl.yml | 標準的なワークフロー |
-| 4_conditional_workflow.dsl.yml | 複雑な判定処理 |
-| 5_http_api_workflow.dsl.yml | 外部 API 連携 |
+| DeepResearch.yml | 深い調査を行う高度なチャットボット |
+| ウェブの検索と要約のワークフローパターン.yml | Web検索と要約のワークフロー |
+| 投資分析レポート コパイロット.yml | Yahoo Finance APIを使った投資分析 |
+| 知識リトリーバル + チャットボット.yml | 知識検索機能付きチャットボット |
+| 質問分類器 + 知識 + チャットボット.yml | 質問分類と知識検索を組み合わせたチャットボット |
 
 ```bash
-cat examples/templates/3_llm_workflow.dsl.yml
+cat "examples/templates/DeepResearch.yml"
 ```
 
 で見ることができます。
@@ -427,16 +427,21 @@ docker compose run --rm dify-creator sync \
 
 ### 利用可能なテンプレート
 
-5 つの DSL テンプレートが `examples/templates/` に用意されています：
+5 つのDify公式DSLテンプレートが `examples/templates/` に用意されています：
 
 ```
 examples/templates/
-├── 1_simple_chatbot.dsl.yml
-├── 2_echo_workflow.dsl.yml
-├── 3_llm_workflow.dsl.yml
-├── 4_conditional_workflow.dsl.yml
-└── 5_http_api_workflow.dsl.yml
+├── DeepResearch.yml
+├── ウェブの検索と要約のワークフローパターン.yml
+├── 投資分析レポート コパイロット.yml
+├── 知識リトリーバル + チャットボット.yml
+└── 質問分類器 + 知識 + チャットボット.yml
 ```
+
+これらは実際のユースケースに基づいた実用的なテンプレートで、以下の特徴があります：
+- advanced-chat、workflow、agent-chatなど様々なアプリモードをカバー
+- 実際のAPI統合（Tavily、Jina、Yahoo Finance等）を含む
+- ナレッジベース検索、質問分類、深い調査など高度な機能を実装
 
 ---
 

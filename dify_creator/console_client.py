@@ -117,14 +117,14 @@ class DifyConsoleClient:
     def login(self, *, email: str, password_plain: str, remember_me: bool = False) -> None:
         """
         /console/api/login 経由でログイン。
-        注意: OSS実装ではパスワードはBase64エンコードされることが期待されています。
+        注意: 現在のDify実装ではパスワードは平文で送信されます。
         """
         resp = self._request(
             "POST",
             "/login",
             json_body={
                 "email": email,
-                "password": _b64(password_plain),
+                "password": password_plain,
                 "remember_me": remember_me,
             },
         )
