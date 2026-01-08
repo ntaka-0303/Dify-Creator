@@ -6,7 +6,15 @@
       "Bash(DIFY_ENV_FILE=.env docker compose run:*)",
       "Bash(head:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(cat:*)",
+      "Bash(dos2unix:*)",
+      "Bash(curl:*)",
+      "Bash(docker compose:*)",
+      "Bash(git rm:*)",
+      "Bash(grep:*)",
+      "Bash(done)",
+      "Bash(DIFY_ENV_FILE=.env bash:*)"
     ]
   }
 }
