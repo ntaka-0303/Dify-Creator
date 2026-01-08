@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Iterator
 
 import requests
+import yaml
 
 
 class DifyConsoleError(RuntimeError):
@@ -152,6 +153,13 @@ class DifyConsoleClient:
         if not yaml_content and not yaml_url:
             raise ValueError("yaml_content か yaml_url のどちらかが必要です")
 
+        # yaml_contentが指定されている場合、YAML形式の検証を行う
+        if yaml_content:
+            try:
+                yaml.safe_load(yaml_content)
+            except yaml.YAMLError as e:
+                raise DifyConsoleError(f"無効なYAML形式です: {e}")
+
         mode = "yaml-content" if yaml_content else "yaml-url"
         payload: dict[str, Any] = {
             "mode": mode,
@@ -167,11 +175,15 @@ class DifyConsoleClient:
         # None のキーを削除
         payload = {k: v for k, v in payload.items() if v is not None}
 
-        resp = self._request("POST", "/apps/imports", json_body=payload)
-        # import はステータスに応じて 200/202/400 を返す
-        if resp.status_code in {200, 202}:
-            return resp.json()
-        self._raise_for_status(resp)
+        try:
+            resp = self._request("POST", "/apps/imports", json_body=payload)
+            # import はステータスに応じて 200/202/400 を返す
+            if resp.status_code in {200, 202}:
+                return resp.json()
+            self._raise_for_status(resp)
+        except DifyConsoleError as e:
+            # より詳細なエラーメッセージを提供
+            raise DifyConsoleError(f"DSLインポートに失敗しました: {e}")
         return {}  # 到達不可
 
     def confirm_import(self, import_id: str) -> dict[str, Any]:
@@ -188,7 +200,15 @@ class DifyConsoleClient:
         data = resp.json()
         if "data" not in data:
             raise DifyConsoleError(f"exportレスポンスが想定外です: {data}")
-        return str(data["data"])
+
+        export_data = data["data"]
+        # レスポンスがdictの場合はYAMLに変換
+        if isinstance(export_data, dict):
+            return yaml.dump(export_data, allow_unicode=True, sort_keys=False)
+        elif isinstance(export_data, str):
+            return export_data
+        else:
+            raise DifyConsoleError(f"export dataの型が想定外です: {type(export_data)}")
 
     def run_draft_workflow_stream(
         self,
